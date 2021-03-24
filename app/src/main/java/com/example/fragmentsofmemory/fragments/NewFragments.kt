@@ -132,6 +132,8 @@ fun AddingPage(userCardViewModel: UserCardViewModel) {
             },
 
             topBar = {
+
+
                 TopAppBar(
                     title = {},
                     navigationIcon = {
