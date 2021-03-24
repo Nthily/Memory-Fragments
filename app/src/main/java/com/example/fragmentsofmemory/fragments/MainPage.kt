@@ -167,7 +167,7 @@ fun ShowAllCards(items: List<UserCard>,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "还没有任何的树洞秘密哦，可以去添加~",
+                    text = "该分类下还没有任何记忆碎片噢~ _(:з)∠)_",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold
