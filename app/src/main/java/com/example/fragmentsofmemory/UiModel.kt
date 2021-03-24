@@ -46,6 +46,10 @@ class UiModel: ViewModel(){
 
     var cardId by mutableStateOf(0)
 
+    var textModify by mutableStateOf("")
+    var editing by mutableStateOf(false)
+
+
     fun endReading() {
         reading = false
         maining = true

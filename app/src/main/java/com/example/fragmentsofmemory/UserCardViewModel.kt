@@ -54,10 +54,16 @@ class UserCardViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
-    fun removeDataBase(id:Int) {
+    fun RemoveDataBase(id:Int) {
         viewModelScope.launch(Dispatchers.IO){
-
             db.notes().delete(id)
         }
     }
+
+    fun UpdateCardMsg(id: Int, content:String, time:String) {
+        viewModelScope.launch(Dispatchers.IO){
+            db.notes().update(UserCard(content, id, time))
+        }
+    }
+
 }

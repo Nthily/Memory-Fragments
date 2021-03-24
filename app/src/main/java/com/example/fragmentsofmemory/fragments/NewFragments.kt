@@ -66,8 +66,8 @@ fun PageContent() {
         .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
 
 
-        TextField(value = userContent.value, onValueChange = {
-            userContent.value = it
+        TextField(value = viewModel.textModify, onValueChange = {
+            viewModel.textModify = it
         },modifier = Modifier
             .fillMaxWidth()
             .height(300.dp),
@@ -146,14 +146,23 @@ fun AddingPage(userCardViewModel: UserCardViewModel) {
                             .padding(horizontal = 10.dp)
                             .clickable(
                                 onClick = {
-                                    userCardViewModel.AddDataBase(
-                                        userContent.value,
+
+                                    if(viewModel.editing) {
+                                        userCardViewModel.UpdateCardMsg(viewModel.cardId, viewModel.textModify, viewModel.timeResult)
+                                    }
+                                    else {
+                                        userCardViewModel.AddDataBase(
+                                        viewModel.textModify,
                                         viewModel.timeResult
-                                    )
+                                        )
+                                    }
+
                                     viewModel.adding = false
                                     viewModel.maining = true
                                     viewModel.selectedTime = false
                                     viewModel.timeResult = ""
+                                    viewModel.editing = false
+                                    viewModel.textModify = ""
                                     //   userContent.value = ""
                                 },
                                 indication = null,

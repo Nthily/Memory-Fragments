@@ -18,4 +18,7 @@ interface UserCardContentDao {
     @Query("DELETE FROM usercard WHERE id = :idx")
     fun delete(idx: Int)
 
+    @Update
+    fun update(note: UserCard)
+
 }
