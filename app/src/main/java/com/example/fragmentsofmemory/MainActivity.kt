@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
         when(true){
-            viewModel.adding -> dialogViewModel.openDialog = true
+            (viewModel.adding && viewModel.textModify != "") -> dialogViewModel.openDialog = true
+            viewModel.adding -> viewModel.endAddPage()
             viewModel.draweringPage -> viewModel.requestCloseDrawerPage = true
             viewModel.reading -> viewModel.endReading()
             else -> super.onBackPressed()

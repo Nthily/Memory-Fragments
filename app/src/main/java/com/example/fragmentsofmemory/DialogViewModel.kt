@@ -18,7 +18,7 @@ class DialogViewModel: ViewModel() {
     @Composable
     fun PopUpAlertDialog() {
         val viewModel: UiModel = viewModel()
-        if (openDialog) {
+        if (openDialog && viewModel.textModify != "") {
             AlertDialog(
                 onDismissRequest = {
                     // Dismiss the dialog when the user clicks outside the dialog or on the back

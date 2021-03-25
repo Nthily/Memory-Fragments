@@ -122,7 +122,7 @@ fun CreateMemory(userName:String,
                             modifier = Modifier.align(Alignment.End)
                         ) {
                             IconButton(onClick = {
-                                viewModel.startEdit(cardID, userContent, time)
+                                if(viewModel.maining)viewModel.startEdit(cardID, userContent, time)
                             }) {
                                 Icon(
                                     (Icons.Rounded.Create),
@@ -137,7 +137,7 @@ fun CreateMemory(userName:String,
                                     modifier = viewModel.iconSize
                                 )
                             }
-                            IconButton(onClick = { userCardViewModel.RemoveDataBase(cardID) }) {
+                            IconButton(onClick = { if(viewModel.maining)userCardViewModel.RemoveDataBase(cardID) }) {
                                 Icon(
                                     Icons.Rounded.Delete,
                                     contentDescription = null,
