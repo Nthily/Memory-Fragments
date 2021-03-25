@@ -78,11 +78,11 @@ class UiModel: ViewModel(){
 
     fun startEdit(cardID:Int, userContent:String, time:String) {
         cardId = cardID
+        editing = true
         adding = true
         maining = false
         textModify = userContent
         timeResult = time
-        editing = true
     }
 
     fun endAddPage() {

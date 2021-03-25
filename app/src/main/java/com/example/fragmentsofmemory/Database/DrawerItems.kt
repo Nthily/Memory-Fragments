@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class DrawerItems(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "DrawerItems") val drawerItems: String,
 
     //   @ColumnInfo(name = "userImg") val userImg: Image

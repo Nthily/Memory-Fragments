@@ -61,7 +61,7 @@ class UserCardViewModel(application: Application): AndroidViewModel(application)
 
     fun UpdateCardMsg(id: Int, content:String, time:String) {
         viewModelScope.launch(Dispatchers.IO){
-            db.notes().update(UserCard(0, content, time))
+            db.notes().update(UserCard(id, content, time))
         }
     }
 

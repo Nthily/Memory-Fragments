@@ -90,12 +90,12 @@ fun DrawerInfo(items: List<DrawerItems>, drawerItemsViewModel: DrawerItemsViewMo
         ) {
             items(items.size) {
                 Column(
-                    /*
+
                     modifier = Modifier
                         .clickable {
-                            viewModel.selectedItems = items[it].drawerItemsId
+                         //   viewModel.selectedItems = items[it].drawerItemsId
                         }
-                        .background(if (items[it].drawerItemsId != viewModel.selectedItems) MaterialTheme.colors.surface else MaterialTheme.colors.primary)*/
+                       // .background(if (items[it].drawerItemsId != viewModel.selectedItems) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -113,15 +113,10 @@ fun DrawerInfo(items: List<DrawerItems>, drawerItemsViewModel: DrawerItemsViewMo
         }
      //   Spacer(modifier = Modifier.padding(vertical = 5.dp))
         Divider(modifier = Modifier.fillMaxWidth().padding(5.dp).height(1.dp))
-        /*
-        Button(onClick = {
-            drawerItemsViewModel.AddDrawerItemsDatabase("记忆碎片")
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "点我创建新分类")
-        }*/
+
         Row(
             modifier = Modifier.clickable{
-
+                drawerItemsViewModel.addDrawerItemsDatabase("我asdasd是憨批")
             }.padding(8.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.padding(5.dp))
