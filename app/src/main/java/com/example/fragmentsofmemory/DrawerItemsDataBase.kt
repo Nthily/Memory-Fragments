@@ -27,7 +27,7 @@ abstract class DrawerItemsDataBase : RoomDatabase() {
             INSTANCE?.let { database ->
                 scope.launch {
                     val dao = database.getDao()
-                    dao.insert(DrawerItems(0, "初始化的新分类"))
+                    dao.insert(DrawerItems(0, "Home"))
                 }
             }
         }

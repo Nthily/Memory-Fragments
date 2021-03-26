@@ -43,7 +43,10 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun DrawerInfo(items: List<DrawerItems>, drawerItemsViewModel: DrawerItemsViewModel) {
+fun DrawerInfo(items: List<DrawerItems>,
+               drawerItemsViewModel: DrawerItemsViewModel,
+               scaffoldState: ScaffoldState,
+               scope: CoroutineScope) {
 
     val viewModel: UiModel = viewModel()
 
@@ -93,9 +96,13 @@ fun DrawerInfo(items: List<DrawerItems>, drawerItemsViewModel: DrawerItemsViewMo
 
                     modifier = Modifier
                         .clickable {
-                         //   viewModel.selectedItems = items[it].drawerItemsId
+                            viewModel.selectedItems = items[it].uid
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                                scaffoldState.drawerState.overflow
+                            }
                         }
-                       // .background(if (items[it].drawerItemsId != viewModel.selectedItems) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
+                        .background(if (items[it].uid != viewModel.selectedItems) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -134,7 +141,7 @@ fun DisplayDrawerContent(viewModel:UiModel, drawerItemsViewModel: DrawerItemsVie
         val drawerItems: List<DrawerItems>? by drawerItemsViewModel.allDrawerItems.observeAsState()
 
 
-        drawerItems?.let { DrawerInfo(it, drawerItemsViewModel) }
+        drawerItems?.let { DrawerInfo(it, drawerItemsViewModel, scaffoldState, scope) }
 
         if(viewModel.requestCloseDrawerPage) {
             scope.launch {
