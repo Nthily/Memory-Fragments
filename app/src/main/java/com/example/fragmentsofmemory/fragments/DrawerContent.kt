@@ -105,12 +105,12 @@ fun DrawerInfo(items: List<DrawerItems>,
                 val squareSize = 96.dp
 
                 var swipeableState = rememberSwipeableState(0) //控制是否弹出, 1 为弹出
-
                 val sizePx = with(LocalDensity.current) { squareSize.toPx() }
                 val anchors = mapOf(0f to 0, sizePx to -1)
 
                 var editable by remember { mutableStateOf(false) }
 
+                Log.d(TAG, "WTF + ${swipeableState.direction}")
                 editable = swipeableState.targetValue == -1
 
                 Box{
@@ -119,10 +119,11 @@ fun DrawerInfo(items: List<DrawerItems>,
                             .swipeable(
                                 state = swipeableState,
                                 anchors = anchors,
-                                thresholds = { from, to -> FractionalThreshold(-3f) },
+                                thresholds = { from, to -> FractionalThreshold(0.3f) },
                                 orientation = Orientation.Horizontal,
+                                reverseDirection = true
                             )
-                            .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0)}
+                            .offset { IntOffset(-swipeableState.offset.value.roundToInt(), 0)}
 
                             .clickable {
                                 viewModel.currentCategory = items[it].uid
@@ -187,14 +188,16 @@ fun DrawerInfo(items: List<DrawerItems>,
                     }
 
                     androidx.compose.animation.AnimatedVisibility(visible = editable) {
-                        Row(
-                            modifier = Modifier.fillMaxHeight()
-                        ){
-                            IconButton(onClick = {}) {
-                                Icon(Icons.Rounded.Delete, contentDescription = null)
-                            }
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(Icons.Rounded.Edit, contentDescription = null)
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+                            Row(
+                                modifier = Modifier.fillMaxHeight()
+                            ){
+                                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.background(Color(0xFF7F849F))) {
+                                    Icon(Icons.Rounded.Edit, contentDescription = null)
+                                }
+                                IconButton(onClick = {}, modifier = Modifier.background(Color(0xFFE65B65))) {
+                                    Icon(Icons.Rounded.Delete, contentDescription = null)
+                                }
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 package com.example.fragmentsofmemory.fragments
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 
@@ -246,6 +247,7 @@ fun TopBar(scaffoldState: ScaffoldState, scope: CoroutineScope) {
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun HomePageEntrances(userCardViewModel: UserCardViewModel,
