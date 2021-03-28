@@ -3,6 +3,7 @@ package com.example.fragmentsofmemory.fragments
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +16,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
+@ExperimentalMaterialApi
 @Composable
 fun DrawerInfo(items: List<DrawerItems>,
                scaffoldState: ScaffoldState,
@@ -79,13 +82,25 @@ fun DrawerInfo(items: List<DrawerItems>,
                 if (viewModel.lightTheme) Color.White else Color(0xFF1C242F)
             )
     ) {
+        val width = 96.dp
+        val squareSize = 48.dp
+
+        val swipeableState = rememberSwipeableState(1)
+        val sizePx = with(LocalDensity.current) { squareSize.toPx() }
+        val anchors = mapOf(0f to 0, sizePx to 1)
+
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
             items(items.size) {
                 Column(
-
                     modifier = Modifier
+                        .swipeable(
+                            state = swipeableState,
+                            anchors = anchors,
+                            thresholds = { from, to -> FractionalThreshold(0.3f) },
+                            orientation = Orientation.Horizontal
+                        )
                         .clickable {
                             viewModel.currentCategory = items[it].uid
                             viewModel.selectedItems = items[it].uid
@@ -118,10 +133,10 @@ fun DrawerInfo(items: List<DrawerItems>,
                             ){
 
                                 Text(text =  "${categoryItems[it].count}",
-                                    modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                                    modifier = Modifier.padding(start = 6.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
                                     style = androidx.compose.ui.text.TextStyle(
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.W900,
+                                    fontSize = 12.sp,
                                     letterSpacing = 0.15.sp,
                                     color = Color.White
                                 ))
@@ -155,6 +170,7 @@ fun DrawerInfo(items: List<DrawerItems>,
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 fun DisplayDrawerContent(
     viewModel:UiModel,

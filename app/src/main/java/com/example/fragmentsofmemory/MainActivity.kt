@@ -7,6 +7,9 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 
 import com.afollestad.date.dayOfMonth
 import com.afollestad.date.month
@@ -16,7 +19,7 @@ import com.afollestad.materialdialogs.datetime.datePicker
 import com.example.fragmentsofmemory.fragments.*
 
 import com.example.fragmentsofmemory.ui.theme.MyTheme
-
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

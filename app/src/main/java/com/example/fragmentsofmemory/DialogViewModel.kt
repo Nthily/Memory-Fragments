@@ -1,15 +1,19 @@
 package com.example.fragmentsofmemory
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -113,12 +117,14 @@ class DialogViewModel: ViewModel() {
         }
     }*/
 
+
     @Composable
     fun PopUpAlertDialogDrawerItems(userCardViewModel: UserCardViewModel) {
         val viewModel: UiModel = viewModel()
 
         if(viewModel.addNewCategory) {
             AlertDialog(
+                modifier = Modifier.height(200.dp),
                 onDismissRequest = {
                     // Dismiss the dialog when the user clicks outside the dialog or on the back
                     // button. If you want to disable that functionality, simply use an empty
@@ -126,14 +132,24 @@ class DialogViewModel: ViewModel() {
                     viewModel.addNewCategory = false
                 },
                 title = {
-                    Text(text = "输入喜欢的名字吧~")
+                    Text(text = "输入喜欢的分类名字吧~")
                 },
                 text = {
-                    TextField(value = viewModel.categoryName, onValueChange = {
-                        viewModel.categoryName = it
-                    },  colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color(255, 255, 255, 1)),
-                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900))
+                       Box(){
+
+                           TextField(value = viewModel.categoryName, onValueChange = {
+                               viewModel.categoryName = it
+                           },
+                                  colors = TextFieldDefaults.textFieldColors(
+                                  backgroundColor = Color(255, 255, 255, 1)),
+                                  textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900),
+
+                               singleLine = true, leadingIcon = {
+                                   IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(20.dp)) {
+                                       Icon(Icons.Rounded.Favorite, contentDescription = null)
+                                   }
+                               })
+                       }
                 },
                 confirmButton = {
                     TextButton(
@@ -155,7 +171,7 @@ class DialogViewModel: ViewModel() {
                     ) {
                         Text("取消")
                     }
-                }
+                },
             )
         }
     }

@@ -121,7 +121,7 @@ fun CreateMemory(userName:String,
                             }
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.reply_24px),
+                                    Icons.Rounded.Share,
                                     contentDescription = null,
                                     modifier = viewModel.iconSize
                                 )
@@ -130,6 +130,7 @@ fun CreateMemory(userName:String,
                                 if(viewModel.maining){
                                     viewModel.cardId = cardID
                                     viewModel.deleteCard(userCardViewModel)
+
                                 } }) {
                                 Icon(
                                     Icons.Rounded.Delete,
@@ -196,32 +197,6 @@ fun ShowAllCards(items: List<UserCard>,
                 }
             }
         }
-        /*
-        if (userCardViewModel.searchCardNum(viewModel.currentCategory) == 0) {
-            AlertNoCard()
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f),
-                reverseLayout = true, state = LazyListState(items.size)
-            ) {
-                items(items.size) {
-                    Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                        if(items[it].categoryID == viewModel.currentCategory) {
-                            CreateMemory(
-                                userName = userNameitems[0].userName,
-                                userContent = items[it].content,
-                                time = items[it].time,
-                                memoryOrder = it + 1,
-                                userCardViewModel = userCardViewModel,
-                                cardID = items[it].id
-                            )
-                        }
-                        // Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                    }
-                }
-            }
-        }*/
     }
 
 }
@@ -271,6 +246,7 @@ fun TopBar(scaffoldState: ScaffoldState, scope: CoroutineScope) {
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 fun HomePageEntrances(userCardViewModel: UserCardViewModel,
                         userInfoViewModel: UserInfoViewModel) {

@@ -13,10 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Create
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,7 +95,7 @@ fun DeteilPage(userCardViewModel: UserCardViewModel) {
                                 Icon((Icons.Rounded.Create), contentDescription = null, modifier = viewModel.iconSize)
                             }
                             IconButton(onClick = { /*TODO*/ }) {
-                                Icon(painter = painterResource(id = R.drawable.reply_24px), contentDescription = null, modifier = viewModel.iconSize)
+                                Icon(Icons.Rounded.Share, contentDescription = null, modifier = viewModel.iconSize)
                             }
                             IconButton(onClick = {
                                 viewModel.deleteCard(userCardViewModel)
