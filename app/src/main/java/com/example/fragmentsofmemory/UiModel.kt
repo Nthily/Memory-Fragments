@@ -54,6 +54,12 @@ class UiModel: ViewModel(){
     var addNewCategory by mutableStateOf(false)
     var categoryName by mutableStateOf("")
 
+    var requestCloseDrawer by mutableStateOf(false)
+    var currentOpenedDrawer by mutableStateOf(0)
+
+    var editingCategory by mutableStateOf(false) //启用编辑分类状态
+    var editingCategoryUid by mutableStateOf(0)
+    var editingCategoryName by mutableStateOf("")
 
     fun endReading() {
         reading = false

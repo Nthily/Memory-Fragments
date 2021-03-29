@@ -45,6 +45,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.IntOffset
+import kotlinx.coroutines.Dispatchers
 import kotlin.math.roundToInt
 
 @ExperimentalAnimationApi
@@ -104,7 +105,16 @@ fun DrawerInfo(items: List<DrawerItems>,
             items(items.size) {
                 val squareSize = 96.dp
 
-                var swipeableState = rememberSwipeableState(0) //控制是否弹出, 1 为弹出
+                val swipeableState = rememberSwipeableState(0)
+
+
+                    /*confirmStateChange = { wtf -> //是否启用应用动画,也就是最终会不会停留
+                    when(true){
+                        viewModel.requestOpenDrawer -> true
+                        !viewModel.requestOpenDrawer -> false
+                        else -> true
+                    }*/
+
                 val sizePx = with(LocalDensity.current) { squareSize.toPx() }
                 val anchors = mapOf(0f to 0, sizePx to -1)
 
@@ -112,22 +122,35 @@ fun DrawerInfo(items: List<DrawerItems>,
 
                 editable = swipeableState.targetValue == -1
 
+
+                LaunchedEffect(viewModel.requestCloseDrawer) { //关闭 Drawer
+                    swipeableState.animateTo(0)
+                    viewModel.requestCloseDrawer = false
+                }
+
+
+
                 Box{
                     Column(
                         modifier = Modifier
                             .swipeable(
                                 state = swipeableState,
                                 anchors = anchors,
-                                thresholds = { from, to -> FractionalThreshold(0.3f) },
+                                thresholds = { from, to ->
+                                    FractionalThreshold(0.3f)
+                                },
                                 orientation = Orientation.Horizontal,
                                 reverseDirection = true,
-                            )
-                            .offset { IntOffset(-swipeableState.offset.value.roundToInt(), 0)}
+
+                                )
+                            .offset {
+                                IntOffset(-swipeableState.offset.value.roundToInt(), 0)
+                            }
 
                             .clickable {
                                 viewModel.currentCategory = items[it].uid
                                 viewModel.selectedItems = items[it].uid
-                             //   if(swipeableState.targetValue == -1) swipeableState.targetValue = 0
+                                //   if(swipeableState.targetValue == -1) swipeableState.targetValue = 0
                                 /*
                                 scope.launch {
                                     scaffoldState.drawerState.close()
@@ -189,17 +212,30 @@ fun DrawerInfo(items: List<DrawerItems>,
                     }
 
                     androidx.compose.animation.AnimatedVisibility(visible = editable) {
-                        Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(), horizontalAlignment = Alignment.End) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(), horizontalAlignment = Alignment.End) {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ){
                                 IconButton(onClick = {
-                                }, modifier = Modifier.background(Color(0xFF7F849F)).padding(1.dp)) {
+                                    viewModel.requestCloseDrawer = true
+                                    viewModel.editingCategory = true
+                                    viewModel.editingCategoryUid = items[it].uid
+
+                                  //  viewModel.editingCategoryName = items[it].drawerItems
+                                   // Log.d(TAG, "uid + ${viewModel.editingCategoryUid} \n name + ${viewModel.editingCategoryName}")
+                                }, modifier = Modifier
+                                    .background(Color(0xFF7F849F))
+                                    .padding(1.dp)) {
                                     Icon(Icons.Rounded.Edit, contentDescription = null)
                                 }
                                 IconButton(onClick = {
+                                    viewModel.requestCloseDrawer = true
                                     userCardViewModel.deleteCategoryDataBase(items[it].uid)
-                                }, modifier = Modifier.background(Color(0xFFE65B65)).padding(1.dp)) {
+                                }, modifier = Modifier
+                                    .background(Color(0xFFE65B65))
+                                    .padding(1.dp)) {
                                     Icon(Icons.Rounded.Delete, contentDescription = null)
                                 }
                             }

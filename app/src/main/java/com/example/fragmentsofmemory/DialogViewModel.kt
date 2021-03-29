@@ -1,5 +1,7 @@
 package com.example.fragmentsofmemory
 
+import android.content.ContentValues
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fragmentsofmemory.Database.DrawerItems
 import com.example.fragmentsofmemory.fragments.userContent
 
 class DialogViewModel: ViewModel() {
@@ -122,7 +125,7 @@ class DialogViewModel: ViewModel() {
     fun PopUpAlertDialogDrawerItems(userCardViewModel: UserCardViewModel) {
         val viewModel: UiModel = viewModel()
 
-        if(viewModel.addNewCategory) {
+        if(viewModel.addNewCategory || viewModel.editingCategory) {
             AlertDialog(
 
                 onDismissRequest = {
@@ -132,7 +135,7 @@ class DialogViewModel: ViewModel() {
                     viewModel.addNewCategory = false
                 },
                 title = {
-                    Text(text = "输入喜欢的分类名字吧~")
+                    Text(if(viewModel.editingCategory) "修改名字啦~" else "添加新的分类~")
                 },
                 text = {
                        Column(modifier = Modifier.padding(top = 10.dp)) {
@@ -153,9 +156,17 @@ class DialogViewModel: ViewModel() {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            userCardViewModel.addCategoryDataBase(viewModel.categoryName)
-                            viewModel.addNewCategory = false
-                            viewModel.categoryName = ""
+                            if(viewModel.addNewCategory) {
+                                userCardViewModel.addCategoryDataBase(viewModel.categoryName)
+                                viewModel.addNewCategory = false
+                                viewModel.categoryName = ""
+                            }
+
+                            if(viewModel.editingCategory){
+                             //   Log.d(ContentValues.TAG, "uid + ${viewModel.editingCategoryUid} \n name + ${viewModel.editingCategoryName}")
+                             //   userCardViewModel.updateCategoryDataBaseName(viewModel.editingCategoryUid)
+                                viewModel.editingCategory = false
+                            }
                         }
                     ) {
                         Text("确定")

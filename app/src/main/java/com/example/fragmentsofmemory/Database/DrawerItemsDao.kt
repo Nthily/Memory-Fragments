@@ -1,10 +1,7 @@
 package com.example.fragmentsofmemory.Database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface DrawerItemsDao {
@@ -17,4 +14,8 @@ interface DrawerItemsDao {
 
     @Query("DELETE FROM DrawerItems WHERE uid = :idx")
     fun delete(idx: Int)
+
+    /*
+    @Update
+    fun update(uid: Int)*/
 }
