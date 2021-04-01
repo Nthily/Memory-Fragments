@@ -37,7 +37,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.afollestad.date.dayOfMonth
+import com.afollestad.date.month
+import com.afollestad.date.year
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.datetime.datePicker
 import com.example.fragmentsofmemory.*
 import com.example.fragmentsofmemory.R
 import kotlinx.coroutines.CoroutineScope
@@ -58,11 +62,9 @@ fun Modifier.percentOffsetX(percent: Float): Modifier =
 
 
 @Composable
-fun PageContent(file: File, context: Context) {
-    val viewModel: UiModel = viewModel()
+fun PageContent(viewModel: UiModel, file: File, context: Context) {
+
     viewModel.SetSecBackground(background = R.drawable._e826ba47840c0723c356ce92e6d8b39)
-
-
     Column(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -102,6 +104,15 @@ fun PageContent(file: File, context: Context) {
                 Row{
                     Button(onClick = {
                         viewModel.timing = true
+                        if(viewModel.timing) {
+                            MaterialDialog(context).show {
+                                datePicker { dialog, date ->
+                                    viewModel.timeResult = "${date.year}.${date.month + 1}.${date.dayOfMonth}"
+                                }
+                            }
+                        }
+                        viewModel.timing = false
+                        if(viewModel.timeResult != "")viewModel.selectedTime = true
                     }, colors = if(viewModel.timeResult != "") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1DC792))
                     else ButtonDefaults.buttonColors(MaterialTheme.colors.primary), modifier = Modifier
                         .animateContentSize()
@@ -117,11 +128,9 @@ fun PageContent(file: File, context: Context) {
 
 
 @Composable
-fun AddingPage(userCardViewModel: UserCardViewModel,file:File, context: Context) {
+fun AddingPage(viewModel: UiModel, userCardViewModel: UserCardViewModel,file:File, context: Context) {
 
-    val viewModel: UiModel = viewModel()
     val dialogViewModel: DialogViewModel = viewModel()
-
     val percentOffsetX = animateFloatAsState(if (viewModel.adding) 0f else 1f)
 
     Box(
@@ -133,7 +142,7 @@ fun AddingPage(userCardViewModel: UserCardViewModel,file:File, context: Context)
 
         Scaffold(
             content = {
-                PageContent(file, context)
+                PageContent(viewModel, file, context)
             },
 
             topBar = {

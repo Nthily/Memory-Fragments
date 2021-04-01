@@ -1,5 +1,6 @@
 package com.example.fragmentsofmemory
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -40,9 +41,7 @@ import java.io.File
 class Welcome : AppCompatActivity() {
 
     private val userCardViewModel by viewModels<UserCardViewModel>()
-
     private val userInfoViewModel by viewModels<UserInfoViewModel>()
-
     private val dialogViewModel:DialogViewModel by viewModels()
     private val viewModel:UiModel by viewModels()
 
@@ -55,24 +54,25 @@ class Welcome : AppCompatActivity() {
             val file = File(context.getExternalFilesDir(null), "picture.jpg")
             val navController = rememberNavController()
 
-
                NavHost(navController, startDestination = "welcome") {
                 composable("welcome") { Test( navController) }
-                composable("mainpage") {
+                composable("mainPage") {
+
                     MyTheme(viewModel) {
-                        HomePageEntrances(userCardViewModel, userInfoViewModel, file, context)
-                        AddingPage(userCardViewModel, file , context)
-                        dialogViewModel.PopUpAlertDialog()
-                        dialogViewModel.PopUpAlertDialogDrawerItems(userCardViewModel)
-                        ReadingFragments(userInfoViewModel, userCardViewModel, file, context)
-                        timePicker()
+                        HomePageEntrances(viewModel, userCardViewModel, userInfoViewModel, file, context)
+                        AddingPage(viewModel, userCardViewModel, file , context)
+                        dialogViewModel.PopUpAlertDialog(viewModel)
+                        dialogViewModel.PopUpAlertDialogDrawerItems(viewModel, userCardViewModel)
+                        ReadingFragments(viewModel, userInfoViewModel, userCardViewModel, file, context)
                     }
                 }
+
             }
         }
     }
 
     override fun onBackPressed() {
+        Log.d(TAG, "$viewModel")
         when(true){
             (viewModel.adding && viewModel.textModify != "") -> dialogViewModel.openDialog = true
             viewModel.adding -> viewModel.endAddPage()
@@ -82,23 +82,12 @@ class Welcome : AppCompatActivity() {
         }
     }
 
-    private fun timePicker(){
-        if(viewModel.timing) {
-            MaterialDialog(this).show {
-                datePicker { dialog, date ->
-                    viewModel.timeResult = "${date.year}.${date.month + 1}.${date.dayOfMonth}"
-                }
-            }
-        }
-        viewModel.timing = false
-        if(viewModel.timeResult != "")viewModel.selectedTime = true
-    }
 }
 
 @Composable
 fun Test(navController: NavController) {
     Button(onClick = {
-        navController.navigate("mainpage"){
+        navController.navigate("mainPage"){
             popUpTo("welcome") { //删除 welcome 界面
                 inclusive = true
             }

@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        /*
         setContent {
             val context = LocalContext.current
             val file = File(context.getExternalFilesDir(null), "picture.jpg")
@@ -73,6 +74,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
+         */
     }
 
 

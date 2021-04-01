@@ -40,8 +40,8 @@ import kotlin.math.roundToInt
 
 
 @Composable
-fun DeteilPage(userCardViewModel: UserCardViewModel, file: File, context: Context) {
-    val viewModel: UiModel = viewModel()
+fun DeteilPage(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: File, context: Context) {
+
     viewModel.SetSecBackground(background = R.drawable.wallhaven_83kvrk)
 
     Column(modifier = Modifier
@@ -124,10 +124,9 @@ fun DeteilPage(userCardViewModel: UserCardViewModel, file: File, context: Contex
 }
 
 @Composable
-fun ReadingFragments(userInfoViewModel: UserInfoViewModel,
+fun ReadingFragments(viewModel: UiModel, userInfoViewModel: UserInfoViewModel,
                      userCardViewModel: UserCardViewModel, file: File,context: Context) {
 
-    val viewModel: UiModel = viewModel()
     val percentOffsetX = animateFloatAsState(if (viewModel.reading) 0f else 1f)
 
     Box(
@@ -138,7 +137,7 @@ fun ReadingFragments(userInfoViewModel: UserInfoViewModel,
     ) {
         Scaffold(
             content = {
-                DeteilPage(userCardViewModel,file,context)
+                DeteilPage(viewModel, userCardViewModel,file,context)
             },
 
             topBar = {

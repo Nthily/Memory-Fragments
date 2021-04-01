@@ -76,7 +76,8 @@ fun uploadPicture(file:File, context: Context, viewModel: UiModel) {
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun DrawerInfo(items: List<DrawerItems>,
+fun DrawerInfo(viewModel:UiModel,
+               items: List<DrawerItems>,
                scaffoldState: ScaffoldState,
                scope: CoroutineScope,
                userCardViewModel: UserCardViewModel,
@@ -85,7 +86,6 @@ fun DrawerInfo(items: List<DrawerItems>,
                file:File) {
 
   //  val context = LocalContext.current
-    val viewModel: UiModel = viewModel()
   //  val file = File(context.getExternalFilesDir(null), "picture.jpg")
 
     val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
@@ -338,7 +338,7 @@ fun DisplayDrawerContent(
     //    val drawerItems: List<DrawerItems>? by userCardViewModel.drawer.observeAsState()
 
         if (categoryNum != null) {
-            DrawerInfo(drawerItems, scaffoldState, scope, userCardViewModel, categoryNum, context, file)
+            DrawerInfo(viewModel, drawerItems, scaffoldState, scope, userCardViewModel, categoryNum, context, file)
         }
 
         if(viewModel.requestCloseDrawerPage) {

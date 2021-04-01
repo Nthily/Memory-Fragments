@@ -27,8 +27,8 @@ class DialogViewModel: ViewModel() {
     var finishDialog by  mutableStateOf(false)
 
     @Composable
-    fun PopUpAlertDialog() {
-        val viewModel: UiModel = viewModel()
+    fun PopUpAlertDialog(viewModel: UiModel) {
+
         if (openDialog) {
 
             if(viewModel.textModify == ""){
@@ -122,9 +122,7 @@ class DialogViewModel: ViewModel() {
 
 
     @Composable
-    fun PopUpAlertDialogDrawerItems(userCardViewModel: UserCardViewModel) {
-        val viewModel: UiModel = viewModel()
-
+    fun PopUpAlertDialogDrawerItems(viewModel: UiModel, userCardViewModel: UserCardViewModel) {
         if(viewModel.addNewCategory || viewModel.editingCategory) {
             AlertDialog(
 

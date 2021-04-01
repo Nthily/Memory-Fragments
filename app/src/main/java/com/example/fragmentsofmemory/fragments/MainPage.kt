@@ -1,7 +1,9 @@
 package com.example.fragmentsofmemory.fragments
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.activity.compose.registerForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
@@ -48,7 +50,8 @@ import java.io.File
 
 
 @Composable
-fun CreateMemory(userName:String,
+fun CreateMemory(viewModel: UiModel,
+                 userName:String,
                  userContent:String,
                  memoryOrder:Int,
                  time:String,
@@ -56,8 +59,6 @@ fun CreateMemory(userName:String,
                  cardID:Int,
                  file: File,
                  context: Context) {
-
-    val viewModel: UiModel = viewModel()
 
     Card(elevation = 10.dp, modifier = Modifier
         .padding(20.dp)
@@ -67,6 +68,7 @@ fun CreateMemory(userName:String,
                 .clip(RoundedCornerShape(14.dp))
                 .clickable {
                     if (viewModel.maining) {
+                        Log.d(ContentValues.TAG, "$viewModel")
                         viewModel.testTxt = userContent
                         viewModel.userName = userName
                         viewModel.reading = true
@@ -176,16 +178,14 @@ fun AlertNoCard() {
 }
 
 @Composable
-fun ShowAllCards(items: List<UserCard>,
+fun ShowAllCards(viewModel: UiModel,
+                 items: List<UserCard>,
                  userNameitems: List<UserInfo>,
                  userCardViewModel: UserCardViewModel,
                  categoryNum: List<CategoryCardCount>?,
                  file: File,
                  context: Context) {
 
-  //  Log.d(ContentValues.TAG, "Hello ${items.size}")
-
-    val viewModel: UiModel = viewModel()
     Column(modifier = Modifier.fillMaxHeight()) {
 
         LazyColumn(
@@ -197,6 +197,7 @@ fun ShowAllCards(items: List<UserCard>,
                 Column(verticalArrangement = Arrangement.SpaceEvenly) {
                     if(items[it].categoryID == viewModel.currentCategory) {
                         CreateMemory(
+                            viewModel = viewModel,
                             userName = userNameitems[0].userName,
                             userContent = items[it].content,
                             time = items[it].time,
@@ -225,8 +226,7 @@ fun popUpDrawer(scaffoldState: ScaffoldState, scope: CoroutineScope) {
 }
 
 @Composable
-fun TopBar(scaffoldState: ScaffoldState, scope: CoroutineScope) {
-    val viewModel: UiModel = viewModel()
+fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineScope) {
     TopAppBar(
         title = {
             Text(text = "记忆碎片", style = TextStyle(
@@ -251,7 +251,8 @@ fun TopBar(scaffoldState: ScaffoldState, scope: CoroutineScope) {
         navigationIcon = {
             IconButton(onClick = {
                 popUpDrawer(scaffoldState, scope)
-                viewModel.draweringPage = true}
+                viewModel.draweringPage = true
+            }
             ){
                 Icon(Icons.Rounded.Menu, contentDescription = null)
             }
@@ -263,13 +264,12 @@ fun TopBar(scaffoldState: ScaffoldState, scope: CoroutineScope) {
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun HomePageEntrances(userCardViewModel: UserCardViewModel,
+fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel,
                         userInfoViewModel: UserInfoViewModel, file: File, context: Context) {
 
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val viewModel: UiModel = viewModel()
 
     val userCardvalue: List<UserCard>? by userCardViewModel.allCards.observeAsState()
     val userInfovalue: List<UserInfo>? by userInfoViewModel.userInfo.observeAsState()
@@ -283,7 +283,8 @@ fun HomePageEntrances(userCardViewModel: UserCardViewModel,
 
             userCardvalue?.let { it1 ->
                 userInfovalue?.let { it2 ->
-                ShowAllCards(items = it1,
+                ShowAllCards(viewModel,
+                    items = it1,
                     it2, userCardViewModel,
                     userCategoryNum,
                     file,
@@ -322,7 +323,7 @@ fun HomePageEntrances(userCardViewModel: UserCardViewModel,
         },
         scaffoldState = scaffoldState,
         topBar = {
-            TopBar(scaffoldState, scope)
+            TopBar(viewModel, scaffoldState, scope)
         },
         drawerBackgroundColor = Color(255, 255 ,255 ,215),
     )
