@@ -49,6 +49,8 @@ class UiModel: ViewModel(){
     var draweringPage by mutableStateOf(false) // 判断是否打开了汉堡菜单
     var requestCloseDrawerPage by mutableStateOf(false) // 请求关闭汉堡菜单
 
+    var hasAnyExtraButtonRevealed by mutableStateOf(false)
+
     var reading by mutableStateOf(false) // 是否在阅读卡片详细内容
 
     var testTxt by mutableStateOf("") // 利用 testText 来传递卡片的内容
@@ -134,7 +136,7 @@ class UiModel: ViewModel(){
 
     fun closeDrawerContent() {
         requestCloseDrawerPage = true // 关闭 Drawer
-        requestCloseDrawer = true  //收起 DrawerItems 编辑和删除按钮
+        requestCloseDrawer = !requestCloseDrawer  //收起 DrawerItems 编辑和删除按钮
     }
 
     @Composable

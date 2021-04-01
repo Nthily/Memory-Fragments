@@ -9,6 +9,7 @@ import androidx.activity.compose.registerForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -185,19 +186,28 @@ fun DrawerInfo(viewModel:UiModel,
                 var editable by remember { mutableStateOf(false) }
 
                 editable = swipeableState.targetValue == -1
-
-
-                LaunchedEffect(viewModel.requestCloseDrawer) { //关闭 Drawer
-                    swipeableState.animateTo(0)
-                    viewModel.requestCloseDrawer = false
+                LaunchedEffect(editable) {   // 检测是否有任何地方被滑动
+                    viewModel.hasAnyExtraButtonRevealed = editable
+                }
+                LaunchedEffect(viewModel.hasAnyExtraButtonRevealed) {
+                    if(!viewModel.hasAnyExtraButtonRevealed) {
+                        swipeableState.animateTo(0)
+                    }
                 }
 
+                /*LaunchedEffect(viewModel.requestCloseDrawer) { //关闭 Drawer
+                        swipeableState.animateTo(0)
+                        Log.d(TAG, "wtf ++++ ")
+                        viewModel.requestCloseDrawer = false
+                }*/
 
+                val anim = rememberCoroutineScope()
 
                 Box(){
                     Column(
                         modifier = Modifier
                             .swipeable(
+                                enabled = editable || !viewModel.hasAnyExtraButtonRevealed,
                                 state = swipeableState,
                                 anchors = anchors,
                                 thresholds = { from, to ->
@@ -210,16 +220,20 @@ fun DrawerInfo(viewModel:UiModel,
                             .offset {
                                 IntOffset(-swipeableState.offset.value.roundToInt(), 0)
                             }
-
                             .clickable {
-                                viewModel.requestCloseDrawer = true
-                                userCardViewModel.updateLastSelected(
-                                    user.uid,
-                                    user.userName,
-                                    items[it].uid
-                                )
+                                if (!viewModel.hasAnyExtraButtonRevealed) {
+                                    viewModel.requestCloseDrawer = true
+                                    userCardViewModel.updateLastSelected(
+                                        user.uid,
+                                        user.userName,
+                                        items[it].uid
+                                    )
+                                } else {
+                                    viewModel.hasAnyExtraButtonRevealed = false
+                                }
                                 //      viewModel.requestSelectPicture = true
                             }
+
                             .background(if (items[it].uid != user.last) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
                     ) {
 
@@ -228,6 +242,7 @@ fun DrawerInfo(viewModel:UiModel,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)
+
                         ) {
 
                             Icon(
@@ -273,6 +288,11 @@ fun DrawerInfo(viewModel:UiModel,
                         }
                     }
 
+                    LaunchedEffect(viewModel.editingCategory) {  // 检测编辑分类对话框是否已关闭
+                        if(!viewModel.editingCategory) {
+                            viewModel.hasAnyExtraButtonRevealed = false
+                        }
+                    }
                     androidx.compose.animation.AnimatedVisibility(visible = editable) {
                         Column(modifier = Modifier
                             .fillMaxWidth()
@@ -281,7 +301,6 @@ fun DrawerInfo(viewModel:UiModel,
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ){
                                 IconButton(onClick = {
-                                    viewModel.requestCloseDrawer = true
                                     viewModel.editingCategory = true
                                     viewModel.editingCategoryUid = items[it].uid
 
@@ -292,8 +311,8 @@ fun DrawerInfo(viewModel:UiModel,
                                     Icon(Icons.Rounded.Edit, contentDescription = null)
                                 }
                                 IconButton(onClick = {
-                                    viewModel.requestCloseDrawer = true
                                     userCardViewModel.deleteCategoryDataBase(items[it].uid)
+                                    viewModel.hasAnyExtraButtonRevealed = false
                                 }, modifier = Modifier
                                     .background(Color(0xFFE65B65))
                                     .padding(1.dp)) {
@@ -322,14 +341,18 @@ fun DrawerInfo(viewModel:UiModel,
         Divider(modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
-            .height(1.dp))
+            .height(1.dp)
+        )
 
+        LaunchedEffect(viewModel.addNewCategory) {  // 检测新建分类对话框是否已关闭
+            if(!viewModel.addNewCategory) {
+                viewModel.hasAnyExtraButtonRevealed = false
+            }
+        }
         Row(
             modifier = Modifier
                 .clickable {
-
                     viewModel.addNewCategory = true
-                    viewModel.requestCloseDrawer = true //why没触发？！！！！！！！！！！！！！
                 }
                 .padding(8.dp)
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
@@ -360,18 +383,25 @@ fun DisplayDrawerContent(
 
     //    val drawerItems: List<DrawerItems>? by userCardViewModel.drawer.observeAsState()
 
+        LaunchedEffect(viewModel.requestCloseDrawer) {  // 检测关闭菜单请求
+            if(viewModel.requestCloseDrawer) {
+                scaffoldState.drawerState.close()
+                scaffoldState.drawerState.overflow
+                viewModel.requestCloseDrawer = false
+            }
+        }
+
+        LaunchedEffect(scaffoldState.drawerState.isClosed) {    // 检测菜单是否已通过任何方式关闭
+            if(scaffoldState.drawerState.isClosed) {
+                viewModel.hasAnyExtraButtonRevealed = false
+                viewModel.draweringPage = false
+            }
+        }
+
         if (categoryNum != null) {
             DrawerInfo(viewModel, drawerItems, userCardViewModel, categoryNum, context, file, user)
         }
 
-        if(viewModel.requestCloseDrawerPage) {
-            scope.launch {
-                viewModel.draweringPage = false
-                scaffoldState.drawerState.close()
-                scaffoldState.drawerState.overflow
-            }
-            viewModel.requestCloseDrawerPage = false
-        }
     }
 
 }
