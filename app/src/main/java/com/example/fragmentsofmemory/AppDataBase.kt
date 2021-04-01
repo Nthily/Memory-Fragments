@@ -24,12 +24,12 @@ abstract class AppDatabase : RoomDatabase() {
             INSTANCE?.let { database ->
                 scope.launch {
                     val dao = database.notes()
-                    val Drawer = database.getDrawer()
+                    val drawer = database.getDrawer()
                     val info = database.getUserInfo()
 
-                    Drawer.insert(DrawerItems(0, "Home"))
+                    drawer.insert(DrawerItems(0, "Home"))
                     dao.insert(UserCard(0, 1, "Hello World", "2021.3.28"))
-                    info.insert(UserInfo(0, "Nthily"))
+                    info.insert(UserInfo(0, "Nthily", 1))
                 }
             }
         }

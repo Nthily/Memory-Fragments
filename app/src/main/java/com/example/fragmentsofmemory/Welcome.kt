@@ -22,6 +22,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +41,7 @@ import com.afollestad.date.month
 import com.afollestad.date.year
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
+import com.example.fragmentsofmemory.Database.UserInfo
 import com.example.fragmentsofmemory.fragments.AddingPage
 import com.example.fragmentsofmemory.fragments.HomePageEntrances
 import com.example.fragmentsofmemory.fragments.ReadingFragments
@@ -65,17 +67,18 @@ class Welcome : AppCompatActivity() {
             val context = LocalContext.current
             val file = File(context.getExternalFilesDir(null), "picture.jpg")
             val navController = rememberNavController()
+            val user: UserInfo? by userCardViewModel.user.observeAsState()
 
                NavHost(navController, startDestination = "welcome") {
                 composable("welcome") { WelcomePage( viewModel, navController,file, context) }
                 composable("mainPage") {
 
                     MyTheme(viewModel) {
-                        HomePageEntrances(viewModel, userCardViewModel, file, context)
-                        AddingPage(viewModel, userCardViewModel, file , context)
+                        HomePageEntrances(viewModel, userCardViewModel, file, context, user!!)
+                        AddingPage(dialogViewModel, viewModel, userCardViewModel, file , context, user!!)
                         dialogViewModel.PopUpAlertDialog(viewModel)
                         dialogViewModel.PopUpAlertDialogDrawerItems(viewModel, userCardViewModel)
-                        ReadingFragments(viewModel, userCardViewModel, file, context)
+                        ReadingFragments(viewModel, userCardViewModel, file, context, user!!)
                         timePicker()
                     }
                 }

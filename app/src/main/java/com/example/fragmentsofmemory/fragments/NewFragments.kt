@@ -43,6 +43,7 @@ import com.afollestad.date.year
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.example.fragmentsofmemory.*
+import com.example.fragmentsofmemory.Database.UserInfo
 import com.example.fragmentsofmemory.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -63,7 +64,6 @@ fun Modifier.percentOffsetX(percent: Float): Modifier =
 
 @Composable
 fun PageContent(viewModel: UiModel, file: File, context: Context) {
-
     viewModel.SetSecBackground(background = R.drawable._e826ba47840c0723c356ce92e6d8b39)
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -119,9 +119,14 @@ fun PageContent(viewModel: UiModel, file: File, context: Context) {
 
 
 @Composable
-fun AddingPage(viewModel: UiModel, userCardViewModel: UserCardViewModel,file:File, context: Context) {
+fun AddingPage(dialogViewModel: DialogViewModel,
+               viewModel: UiModel,
+               userCardViewModel: UserCardViewModel,
+               file:File,
+               context: Context,
+               user: UserInfo
+) {
 
-    val dialogViewModel: DialogViewModel = viewModel()
     val percentOffsetX = animateFloatAsState(if (viewModel.adding) 0f else 1f)
 
     Box(
@@ -153,18 +158,22 @@ fun AddingPage(viewModel: UiModel, userCardViewModel: UserCardViewModel,file:Fil
                                 onClick = {
 
                                     if (viewModel.editing) {
-                                        userCardViewModel.UpdateCardMsg(
-                                            viewModel.cardId,
-                                            viewModel.textModify,
-                                            viewModel.timeResult,
-                                            viewModel.currentCategory
-                                        )
+                                        user.last?.let {
+                                            userCardViewModel.updateCardMsg(
+                                                viewModel.cardId,
+                                                viewModel.textModify,
+                                                viewModel.timeResult,
+                                                it
+                                            )
+                                        }
                                     } else {
-                                        userCardViewModel.addDataBase(
-                                            viewModel.textModify,
-                                            viewModel.timeResult,
-                                            viewModel.currentCategory
-                                        )
+                                        user.last?.let {
+                                            userCardViewModel.addDataBase(
+                                                viewModel.textModify,
+                                                viewModel.timeResult,
+                                                it
+                                            )
+                                        }
                                     }
 
                                     viewModel.endAddPage()

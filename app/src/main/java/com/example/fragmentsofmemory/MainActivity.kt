@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
 
-        when(true){
+        when {
             (viewModel.adding && viewModel.textModify != "") -> dialogViewModel.openDialog = true
             viewModel.adding -> viewModel.endAddPage()
             viewModel.draweringPage -> viewModel.closeDrawerContent()

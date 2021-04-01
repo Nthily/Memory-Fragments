@@ -43,12 +43,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.example.fragmentsofmemory.Database.UserInfo
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.glide.GlideImage
 import java.io.*
@@ -79,12 +81,11 @@ fun uploadPicture(file:File, context: Context, viewModel: UiModel) {
 @Composable
 fun DrawerInfo(viewModel:UiModel,
                items: List<DrawerItems>,
-               scaffoldState: ScaffoldState,
-               scope: CoroutineScope,
                userCardViewModel: UserCardViewModel,
                categoryItems: List<CategoryCardCount>,
                context: Context,
-               file:File) {
+               file:File,
+               user:UserInfo) {
 
   //  val context = LocalContext.current
   //  val file = File(context.getExternalFilesDir(null), "picture.jpg")
@@ -144,7 +145,7 @@ fun DrawerInfo(viewModel:UiModel,
                 }
             }
             Column() {
-                Text(text = "Nthily",
+                Text(text = user.userName,
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight.W900,
                     modifier = Modifier.padding(start = 15.dp, top = 15.dp),
@@ -211,13 +212,15 @@ fun DrawerInfo(viewModel:UiModel,
                             }
 
                             .clickable {
-                                viewModel.currentCategory = items[it].uid
-                                viewModel.selectedItems = items[it].uid
                                 viewModel.requestCloseDrawer = true
+                                userCardViewModel.updateLastSelected(
+                                    user.uid,
+                                    user.userName,
+                                    items[it].uid
+                                )
                                 //      viewModel.requestSelectPicture = true
-
                             }
-                            .background(if (items[it].uid != viewModel.selectedItems) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
+                            .background(if (items[it].uid != user.last) MaterialTheme.colors.surface else MaterialTheme.colors.primary)
                     ) {
 
                         Row(
@@ -305,6 +308,17 @@ fun DrawerInfo(viewModel:UiModel,
             }
         }
      //   Spacer(modifier = Modifier.padding(vertical = 5.dp))
+        if(items.isEmpty()) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .fillMaxHeight()
+            ) {
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("暂无分类", style = MaterialTheme.typography.h6)
+                }
+            }
+        }
         Divider(modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
@@ -315,7 +329,7 @@ fun DrawerInfo(viewModel:UiModel,
                 .clickable {
 
                     viewModel.addNewCategory = true
-                    viewModel.requestCloseDrawer = true
+                    viewModel.requestCloseDrawer = true //why没触发？！！！！！！！！！！！！！
                 }
                 .padding(8.dp)
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
@@ -340,13 +354,14 @@ fun DisplayDrawerContent(
     categoryNum: List<CategoryCardCount>?,
     drawerItems: List<DrawerItems>,
     file: File,
-    context: Context) {
+    context: Context,
+    user:UserInfo) {
     MyTheme(viewModel = viewModel) {
 
     //    val drawerItems: List<DrawerItems>? by userCardViewModel.drawer.observeAsState()
 
         if (categoryNum != null) {
-            DrawerInfo(viewModel, drawerItems, scaffoldState, scope, userCardViewModel, categoryNum, context, file)
+            DrawerInfo(viewModel, drawerItems, userCardViewModel, categoryNum, context, file, user)
         }
 
         if(viewModel.requestCloseDrawerPage) {

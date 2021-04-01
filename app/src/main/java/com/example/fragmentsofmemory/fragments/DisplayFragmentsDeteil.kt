@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.fragmentsofmemory.Database.UserInfo
 import com.example.fragmentsofmemory.R
 import com.example.fragmentsofmemory.UiModel
 import com.example.fragmentsofmemory.UserCardViewModel
@@ -23,7 +24,12 @@ import java.io.File
 
 
 @Composable
-fun DeteilPage(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: File, context: Context) {
+fun DeteilPage(
+    viewModel: UiModel,
+    userCardViewModel: UserCardViewModel,
+    file: File,
+    context: Context,
+    user:UserInfo) {
 
     viewModel.SetSecBackground(background = R.drawable.wallhaven_83kvrk)
 
@@ -47,7 +53,7 @@ fun DeteilPage(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: F
                   //  Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                Text(text = viewModel.userName,
+                Text(text = user.userName,
                     modifier = Modifier.align(Alignment.CenterVertically),
                     fontWeight = FontWeight.W900,
                     style = MaterialTheme.typography.body1)
@@ -108,7 +114,10 @@ fun DeteilPage(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: F
 
 @Composable
 fun ReadingFragments(viewModel: UiModel,
-                     userCardViewModel: UserCardViewModel, file: File,context: Context) {
+                     userCardViewModel: UserCardViewModel,
+                     file: File,
+                     context: Context,
+                     user: UserInfo) {
 
     val percentOffsetX = animateFloatAsState(if (viewModel.reading) 0f else 1f)
 
@@ -120,7 +129,7 @@ fun ReadingFragments(viewModel: UiModel,
     ) {
         Scaffold(
             content = {
-                DeteilPage(viewModel, userCardViewModel,file,context)
+                DeteilPage(viewModel, userCardViewModel,file,context, user)
             },
 
             topBar = {

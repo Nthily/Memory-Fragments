@@ -2,9 +2,8 @@ package com.example.fragmentsofmemory
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,17 +15,14 @@ import com.example.fragmentsofmemory.Database.UserCard
 import com.example.fragmentsofmemory.Database.UserInfo
 import kotlinx.coroutines.*
 
-
 class UserCardViewModel(application: Application): AndroidViewModel(application){
 
     private val db by lazy{AppDatabase.getDatabase(application, CoroutineScope(SupervisorJob()))}
 
     var allCards: LiveData<List<UserCard>> = db.notes().getAll()
     var cardNum: LiveData<List<CategoryCardCount>> = db.notes().searchCardNum()
-
     var drawer: LiveData<List<DrawerItems>> = db.getDrawer().getAll()
-
-    var userInfo: LiveData<List<UserInfo>> = db.getUserInfo().getAll()
+    var user: LiveData<UserInfo> = db.getUserInfo().getUser()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -65,10 +61,15 @@ class UserCardViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
-    fun UpdateCardMsg(id: Int, content:String, time:String, did:Int) {
+    fun updateCardMsg(id: Int, content:String, time:String, did:Int) {
         viewModelScope.launch(Dispatchers.IO){
             db.notes().update(UserCard(id, did, content, time))
         }
     }
 
+    fun updateLastSelected(id: Int, name:String, last:Int) {
+        viewModelScope.launch(Dispatchers.IO){
+            db.getUserInfo().update(UserInfo(id, name, last))
+        }
+    }
 }

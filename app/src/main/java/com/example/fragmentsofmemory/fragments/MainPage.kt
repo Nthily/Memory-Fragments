@@ -1,6 +1,7 @@
 package com.example.fragmentsofmemory.fragments
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
@@ -68,9 +69,7 @@ fun CreateMemory(viewModel: UiModel,
                 .clip(RoundedCornerShape(14.dp))
                 .clickable {
                     if (viewModel.maining) {
-                        Log.d(ContentValues.TAG, "$viewModel")
                         viewModel.testTxt = userContent
-                        viewModel.userName = userName
                         viewModel.reading = true
                         viewModel.cardId = cardID
                         viewModel.maining = false
@@ -180,7 +179,7 @@ fun AlertNoCard() {
 @Composable
 fun ShowAllCards(viewModel: UiModel,
                  items: List<UserCard>,
-                 userNameitems: List<UserInfo>,
+                 user:UserInfo,
                  userCardViewModel: UserCardViewModel,
                  file: File,
                  context: Context) {
@@ -194,10 +193,10 @@ fun ShowAllCards(viewModel: UiModel,
         ) {
             items(items.size) {
                 Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                    if(items[it].categoryID == viewModel.currentCategory) {
+                    if(items[it].categoryID == user.last) {
                         CreateMemory(
                             viewModel = viewModel,
-                            userName = userNameitems[0].userName,
+                            userName = user.userName,
                             userContent = items[it].content,
                             time = items[it].time,
                             memoryOrder = it + 1,
@@ -263,14 +262,13 @@ fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineSco
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
-fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: File, context: Context) {
+fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: File, context: Context, user:UserInfo) {
 
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
-    val userCardvalue: List<UserCard>? by userCardViewModel.allCards.observeAsState()
-    val userInfovalue: List<UserInfo>? by userCardViewModel.userInfo.observeAsState()
+    val userCardValue: List<UserCard>? by userCardViewModel.allCards.observeAsState()
     val userCategoryNum: List<CategoryCardCount>? by userCardViewModel.cardNum.observeAsState()
     val drawerItems: List<DrawerItems>? by userCardViewModel.drawer.observeAsState()
 
@@ -279,43 +277,54 @@ fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, 
             //  HomePage(scaffoldState = scaffoldState, scope = scope, userCardViewModel)
             viewModel.SetBackground(background = R.drawable._55)
 
-            userCardvalue?.let { it1 ->
-                userInfovalue?.let { it2 ->
-                ShowAllCards(viewModel,
-                    items = it1,
-                    it2, userCardViewModel,
-                    file,
-                    context)
-            } }
+            userCardValue?.let { it1 ->
+                user.let { it2 ->
+                    ShowAllCards(viewModel,
+                        items = it1,
+                        it2, userCardViewModel,
+                        file,
+                        context)
+                }
+            }
 
        //    ShowAllCards(items = userCardViewModel.allCards, scaffoldState = scaffoldState, scope = scope, userInfoViewModel)
         },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                  if(viewModel.maining){
-                      viewModel.adding  = true
-                      viewModel.maining = false
-                  }
-             //   userCardViewModel.AddDatabase("Nthily", "Hello world", "3.15")
-                //    Log.d(TAG, "Hello ${userCardViewModel.allCards.size}")
-            }) {
-                Icon(painter = painterResource(id = R.drawable.add_24px), contentDescription = null, modifier = Modifier.size(25.dp))
+            if(user.last != null) {
+                FloatingActionButton(onClick = {
+                    if (viewModel.maining) {
+                    viewModel.adding = true
+                    viewModel.maining = false
+                }
+                    //   userCardViewModel.AddDatabase("Nthily", "Hello world", "3.15")
+                    //    Log.d(TAG, "Hello ${userCardViewModel.allCards.size}")
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add_24px),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
             }
         },
         //   bottomBar = { BottomApps() },
         drawerContent = {
             drawerItems?.let {
-                DisplayDrawerContent(
-                    viewModel = viewModel,
-                    scaffoldState = scaffoldState,
-                    scope = scope,
-                    userCardViewModel = userCardViewModel,
-                    categoryNum = userCategoryNum,
-                    drawerItems = it,
-                    file,
-                    context
-                )
+                user.let { it1 ->
+
+                    DisplayDrawerContent(
+                        viewModel = viewModel,
+                        scaffoldState = scaffoldState,
+                        scope = scope,
+                        userCardViewModel = userCardViewModel,
+                        categoryNum = userCategoryNum,
+                        drawerItems = it,
+                        file = file,
+                        context = context,
+                        user = it1
+                    )
+                }
             }
         },
         scaffoldState = scaffoldState,

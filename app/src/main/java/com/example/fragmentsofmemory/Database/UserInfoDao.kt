@@ -15,4 +15,9 @@ interface UserInfoDao {
 
     @Update
     fun update(note: UserInfo)
+
+    @Query("SELECT * FROM userinfo limit 1")
+    fun getUser(): LiveData<UserInfo>
+
+
 }

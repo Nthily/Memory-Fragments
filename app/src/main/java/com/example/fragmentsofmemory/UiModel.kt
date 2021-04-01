@@ -42,24 +42,20 @@ class UiModel: ViewModel(){
    // var theme by mutableStateOf(MyTheme.Theme.Dark)
     var lightTheme by mutableStateOf(true)
     //  var currentPage: AddNewTreeHoles? by mutableStateOf(null)
-    var maining by mutableStateOf(true)
+    var maining by mutableStateOf(true)     // 检测是否为主界面,否则在其他界面回触发主界面的控件
 
-    var adding by mutableStateOf(false)
+    var adding by mutableStateOf(false)     // 启动添加界面
 
-    var draweringPage by mutableStateOf(false)
-    var requestCloseDrawerPage by mutableStateOf(false)
+    var draweringPage by mutableStateOf(false) // 判断是否打开了汉堡菜单
+    var requestCloseDrawerPage by mutableStateOf(false) // 请求关闭汉堡菜单
 
-    var selectedItems by mutableStateOf(1)
+    var reading by mutableStateOf(false) // 是否在阅读卡片详细内容
 
-    var reading by mutableStateOf(false)
+    var testTxt by mutableStateOf("") // 利用 testText 来传递卡片的内容
 
-    var testTxt by mutableStateOf("")
-    var userName by mutableStateOf("")
     val iconSize = Modifier.size(18.dp)
-
-    var timing by mutableStateOf(false)
-
-    var timeResult by mutableStateOf("")
+    var timing by mutableStateOf(false) // 是否打开时间选择器
+    var timeResult by mutableStateOf("") // 时间结果
 
     var selectedTime by mutableStateOf(false)
 
@@ -68,17 +64,15 @@ class UiModel: ViewModel(){
     var textModify by mutableStateOf("")
     var editing by mutableStateOf(false)
 
-    var currentCategory by mutableStateOf(1)
-
     var addNewCategory by mutableStateOf(false)
     var categoryName by mutableStateOf("")
 
     var requestCloseDrawer by mutableStateOf(false)
-    var currentOpenedDrawer by mutableStateOf(0)
+
 
     var editingCategory by mutableStateOf(false) //启用编辑分类状态
     var editingCategoryUid by mutableStateOf(0)
-    var editingCategoryName by mutableStateOf("")
+
 
     val imageUriState = mutableStateOf<Uri?>(null)
 

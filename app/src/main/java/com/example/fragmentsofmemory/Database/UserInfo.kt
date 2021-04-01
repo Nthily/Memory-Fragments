@@ -4,10 +4,17 @@ import android.graphics.Bitmap
 import android.media.Image
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    foreignKeys = [ForeignKey(entity = DrawerItems::class,
+        parentColumns = ["uid"],
+        childColumns = ["lastSelected"], onDelete = ForeignKey.SET_NULL
+    )]
+)
 data class UserInfo(
-    @PrimaryKey(autoGenerate = true)val uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "userName") val userName: String,
+    @ColumnInfo(name = "lastSelected") var last: Int?
 )

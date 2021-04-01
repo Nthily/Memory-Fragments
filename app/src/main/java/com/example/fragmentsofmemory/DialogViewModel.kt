@@ -26,7 +26,6 @@ import com.example.fragmentsofmemory.fragments.userContent
 
 class DialogViewModel: ViewModel() {
     var openDialog by  mutableStateOf(false)
-    var finishDialog by  mutableStateOf(false)
 
     @Composable
     fun PopUpAlertDialog(viewModel: UiModel) {
@@ -34,6 +33,7 @@ class DialogViewModel: ViewModel() {
         if (openDialog) {
 
             if(viewModel.textModify == ""){
+                openDialog = false
                 viewModel.adding = false
                 viewModel.maining = true
             }
