@@ -9,13 +9,8 @@ import android.widget.Toast
 import androidx.activity.compose.registerForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,137 +36,32 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import com.example.fragmentsofmemory.Database.UserInfo
 import com.yalantis.ucrop.UCrop
 import java.io.*
 import kotlin.math.roundToInt
 
-
-fun uploadPicture(context: Context, viewModel: UiModel) {
-    try {
-        viewModel.userAvatarUploading = File.createTempFile("avatar", null)
-        val options = UCrop.Options()
-        options.setCircleDimmedLayer(true) // 使用圆形裁剪
-        options.setShowCropGrid(false)  // 不显示头像选取的网格
-        options.setShowCropFrame(false) // 不显示头像选取的边框
-
-        UCrop.of(viewModel.imageUriState.value!!, Uri.fromFile(viewModel.userAvatarUploading))
-            .withAspectRatio(1.0F, 1.0F).withOptions(options)
-            .start(context as Activity)
-
-        /*val getIS = context.contentResolver.openInputStream(viewModel.imageUriState.value!!) //基本上传文件代码
-        val os = FileOutputStream(file)
-        val data = ByteArray(getIS!!.available())
-        getIS.read(data)
-        os.write(data)
-        getIS.close()
-        os.close()*/
-
-    } catch (e:IOException) {
-        Toast.makeText(context, "读取失败", Toast.LENGTH_LONG).show()
-    }
-}
-
-
-
-@ExperimentalAnimationApi
 @ExperimentalMaterialApi
+@ExperimentalAnimationApi
 @Composable
-fun DrawerInfo(viewModel:UiModel,
-               items: List<DrawerItems>,
-               userCardViewModel: UserCardViewModel,
-               categoryItems: List<CategoryCardCount>,
-               context: Context,
-               file:File,
-               user:UserInfo) {
-
-  //  val context = LocalContext.current
-  //  val file = File(context.getExternalFilesDir(null), "picture.jpg")
-
-    val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        if(it != null) {
-            viewModel.imageUriState.value = it
-            uploadPicture(context, viewModel)
-        }
-    }
-
-
-    val shit = (
-        if(viewModel.editingProfile) {
-            Modifier.background(Color(90, 143, 185)).animateContentSize(tween(800)).fillMaxSize()
-        }
-        else {
-            Modifier.background(Color(90, 143, 185)).animateContentSize(tween(800)).height(150.dp)
-        }
-    )
-
-    Column(modifier = shit) {
-
-        Column(
-            modifier = Modifier.height(150.dp)
-        ) {
-
-            Row(modifier = Modifier.padding(start = 15.dp, top = 15.dp)){
-                Surface(
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .size(70.dp)
-                        .clip(shape = CircleShape)
-                        .clickable {
-                            getContent.launch("image/*")
-                            /*
-                            val sendIntent: Intent = Intent().apply { // 分享 Intent
-                                action = Intent.ACTION_PICK
-                                type = "image/*"
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                            }
-                            val shareIntent = Intent.createChooser(sendIntent, "选择一张图片作为头像吧~")
-                            //     startActivity(content, shareIntent, Bundle())
-                            startActivityForResult(context, shareIntent, 1, Bundle())
-
-                             */
-
-                             */
-                        },
-                ) {
-                    viewModel.InitUserProfilePic()
-                }
-                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
-
-                    CompositionLocalProvider(LocalContentColor provides Color.White) {
-                        IconButton(onClick = {
-                            viewModel.editingProfile = !viewModel.editingProfile
-                        }) {
-                            if(viewModel.editingProfile)Icon(Icons.Rounded.ArrowBack, contentDescription = "")
-                            else Icon(Icons.Rounded.Edit, contentDescription = "")
-                        }
-                    }
-
-                }
-            }
-            Column() {
-                Text(text = user.userName,
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.W900,
-                    modifier = Modifier.padding(start = 15.dp, top = 15.dp),
-                    color = Color.White)
-                Text(text = "永远相信美好的事情即将发生",
-                    style = MaterialTheme.typography.overline,
-                    fontWeight = FontWeight.W900,
-                    modifier = Modifier.padding(start = 15.dp, top = 8.dp),
-                    color = Color.White)
-            }
-        }
-    }
-
+fun CategoryColumn(viewModel:UiModel,
+                   items: List<DrawerItems>,
+                   userCardViewModel: UserCardViewModel,
+                   categoryItems: List<CategoryCardCount>,
+                   context: Context,
+                   file:File,
+                   user:UserInfo) {
+    // 分类栏
     AnimatedVisibility(
         visible = !viewModel.editingProfile,
-        enter = fadeIn( animationSpec = tween(durationMillis = 550)),
+        enter = fadeIn( animationSpec = tween(durationMillis = 1550)),
         exit = fadeOut( animationSpec = tween(durationMillis = 550))
     ) {
 
@@ -381,6 +271,275 @@ fun DrawerInfo(viewModel:UiModel,
 }
 
 
+@Composable
+fun UserInfoColumn(viewModel:UiModel,
+                   items: List<DrawerItems>,
+                   userCardViewModel: UserCardViewModel,
+                   categoryItems: List<CategoryCardCount>,
+                   context: Context,
+                   file:File,
+                   user:UserInfo) {
+
+    /*
+    val profileMinHeight = 160.dp   // 用户栏展开前高度
+    val profileMaxHeight = 750.dp   // 展开后高度
+    val profileHeight by animateDpAsState(
+        targetValue = (if(viewModel.editingProfile) profileMaxHeight else profileMinHeight),
+        animationSpec = tween(800)
+    )
+
+     */
+    /*
+    Column(modifier = Modifier
+        .background(Color(90, 143, 185))
+        .fillMaxWidth()
+        .height(profileHeight)) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.padding(start = 15.dp, top = 15.dp)){
+                Surface(
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(shape = CircleShape)
+                        .clickable {
+                            getContent.launch("image/*")
+                            /*
+                            val sendIntent: Intent = Intent().apply { // 分享 Intent
+                                action = Intent.ACTION_PICK
+                                type = "image/*"
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, "选择一张图片作为头像吧~")
+                            //     startActivity(content, shareIntent, Bundle())
+                            startActivityForResult(context, shareIntent, 1, Bundle())
+
+                             */
+
+                             */
+                        },
+                ) {
+                    viewModel.InitUserProfilePic()
+                }
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+
+                    CompositionLocalProvider(LocalContentColor provides Color.White) {
+                        IconButton(onClick = {
+                            viewModel.editingProfile = !viewModel.editingProfile
+                        }) {
+                            if(viewModel.editingProfile)Icon(Icons.Rounded.ArrowBack, contentDescription = "")
+                            else Icon(Icons.Rounded.Edit, contentDescription = "")
+                        }
+                    }
+
+                }
+            }
+
+            Column() {
+                Text(text = user.userName,
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.W900,
+                    modifier = Modifier.padding(start = 15.dp, top = 15.dp),
+                    color = Color.White)
+                Text(text = "永远相信美好的事情即将发生",
+                    style = MaterialTheme.typography.overline,
+                    fontWeight = FontWeight.W900,
+                    modifier = Modifier.padding(start = 15.dp, top = 8.dp),
+                    color = Color.White)
+            }
+        }
+    }
+
+     */
+
+     */
+}
+
+fun uploadPicture(context: Context, viewModel: UiModel) {
+    try {
+        viewModel.userAvatarUploading = File.createTempFile("avatar", null)
+        val options = UCrop.Options()
+        options.setCircleDimmedLayer(true) // 使用圆形裁剪
+        options.setShowCropGrid(false)  // 不显示头像选取的网格
+        options.setShowCropFrame(false) // 不显示头像选取的边框
+
+        UCrop.of(viewModel.imageUriState.value!!, Uri.fromFile(viewModel.userAvatarUploading))
+            .withAspectRatio(1.0F, 1.0F).withOptions(options)
+            .start(context as Activity)
+
+        /*val getIS = context.contentResolver.openInputStream(viewModel.imageUriState.value!!) //基本上传文件代码
+        val os = FileOutputStream(file)
+        val data = ByteArray(getIS!!.available())
+        getIS.read(data)
+        os.write(data)
+        getIS.close()
+        os.close()*/
+
+    } catch (e:IOException) {
+        Toast.makeText(context, "读取失败", Toast.LENGTH_LONG).show()
+    }
+}
+
+
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
+@Composable
+fun DrawerInfo(viewModel:UiModel,
+               items: List<DrawerItems>,
+               userCardViewModel: UserCardViewModel,
+               categoryItems: List<CategoryCardCount>,
+               context: Context,
+               file:File,
+               user:UserInfo) {
+
+  //  val context = LocalContext.current
+  //  val file = File(context.getExternalFilesDir(null), "picture.jpg")
+
+    val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        if(it != null) {
+            viewModel.imageUriState.value = it
+            uploadPicture(context, viewModel)
+        }
+    }
+
+    // 用户栏
+    AnimatedVisibility(
+        visible = viewModel.editingProfile,
+        enter = fadeIn( animationSpec = tween(durationMillis = 1000)),
+        exit = fadeOut( animationSpec = tween(durationMillis = 500))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color(90, 143, 185)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ){
+            Card(
+                elevation = 12.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .padding(15.dp)
+            ) {
+                Row(
+                ) {
+                    Column{
+                        Surface(
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .size(60.dp)
+                                .clip(shape = CircleShape)
+                                .clickable {
+                                    getContent.launch("image/*")
+                                },
+                            border = BorderStroke(2.dp, Color.DarkGray)
+                        ) {
+                            viewModel.InitUserProfilePic()
+                        }
+                        Text("编辑头像",
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.align(Alignment.CenterHorizontally))
+                    }
+                }
+            }
+        }
+    }
+
+    // 编辑信息界面栏
+    AnimatedVisibility(
+        visible = !viewModel.editingProfile,
+        enter = fadeIn( animationSpec = tween(durationMillis = 1200)),
+        exit = fadeOut( animationSpec = tween(durationMillis = 1500))
+    ) {
+        Column(modifier = Modifier
+            .background(Color(90, 143, 185))
+            .fillMaxWidth()
+            .height(160.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier.padding(start = 15.dp, top = 15.dp)){
+                    Surface(
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .clip(shape = CircleShape)
+                            .clickable {
+                                getContent.launch("image/*")
+                                /*
+                                val sendIntent: Intent = Intent().apply { // 分享 Intent
+                                    action = Intent.ACTION_PICK
+                                    type = "image/*"
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                }
+                                val shareIntent = Intent.createChooser(sendIntent, "选择一张图片作为头像吧~")
+                                //     startActivity(content, shareIntent, Bundle())
+                                startActivityForResult(context, shareIntent, 1, Bundle())
+
+                                 */
+
+                                 */
+                            },
+                    ) {
+                        viewModel.InitUserProfilePic()
+                    }
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+
+                        CompositionLocalProvider(LocalContentColor provides Color.White) {
+                            IconButton(onClick = {
+                                viewModel.editingProfile = !viewModel.editingProfile
+                            }) {
+                                if(viewModel.editingProfile)Icon(Icons.Rounded.ArrowBack, contentDescription = "")
+                                else Icon(Icons.Rounded.Edit, contentDescription = "")
+                            }
+                        }
+
+                    }
+                }
+
+                Column() {
+                    Text(text = user.userName,
+                        style = MaterialTheme.typography.body2,
+                        fontWeight = FontWeight.W900,
+                        modifier = Modifier.padding(start = 15.dp, top = 15.dp),
+                        color = Color.White)
+                    Text(text = "永远相信美好的事情即将发生",
+                        style = MaterialTheme.typography.overline,
+                        fontWeight = FontWeight.W900,
+                        modifier = Modifier.padding(start = 15.dp, top = 8.dp),
+                        color = Color.White)
+                }
+            }
+        }
+    }
+
+    /*val switchMode = (
+        if(viewModel.editingProfile) {
+            Modifier
+                .background(Color(90, 143, 185))
+                .animateContentSize(tween(800))
+                .fillMaxSize()
+        }
+        else {
+            Modifier
+                .background(Color(90, 143, 185))
+                .animateContentSize(tween(800))
+                .height(160.dp)
+        }
+    )*/
+
+
+
+    // 分类栏
+    CategoryColumn(viewModel, items, userCardViewModel, categoryItems, context, file, user)
+}
+
+
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
@@ -411,6 +570,7 @@ fun DisplayDrawerContent(
             if(scaffoldState.drawerState.isClosed) {
                 viewModel.hasAnyExtraButtonRevealed = false
                 viewModel.draweringPage = false
+                viewModel.editingProfile = false
             }
         }
 
