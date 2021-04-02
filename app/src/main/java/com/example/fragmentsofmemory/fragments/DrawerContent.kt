@@ -45,6 +45,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.IntOffset
 import com.example.fragmentsofmemory.Database.UserInfo
 import com.yalantis.ucrop.UCrop
@@ -56,9 +57,10 @@ fun uploadPicture(context: Context, viewModel: UiModel) {
     try {
         viewModel.userAvatarUploading = File.createTempFile("avatar", null)
         val options = UCrop.Options()
-        options.setCircleDimmedLayer(true)
-        options.setShowCropGrid(false)
-        options.setShowCropFrame(false)
+        options.setCircleDimmedLayer(true) // 使用圆形裁剪
+        options.setShowCropGrid(false)  // 不显示头像选取的网格
+        options.setShowCropFrame(false) // 不显示头像选取的边框
+
         UCrop.of(viewModel.imageUriState.value!!, Uri.fromFile(viewModel.userAvatarUploading))
             .withAspectRatio(1.0F, 1.0F).withOptions(options)
             .start(context as Activity)
@@ -96,8 +98,6 @@ fun DrawerInfo(viewModel:UiModel,
         if(it != null) {
             viewModel.imageUriState.value = it
             uploadPicture(context, viewModel)
-            Log.d(TAG, "omgggggggggggggggggggggg: $it")
-            // Handle the returned Uri
         }
     }
 
@@ -113,6 +113,7 @@ fun DrawerInfo(viewModel:UiModel,
                     shape = CircleShape,
                     modifier = Modifier
                         .size(70.dp)
+                        .clip(shape = CircleShape)
                         .clickable {
                             getContent.launch("image/*")
                             /*
