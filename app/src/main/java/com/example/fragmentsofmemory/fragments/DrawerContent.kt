@@ -43,6 +43,8 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -458,21 +460,28 @@ fun DrawerInfo(viewModel:UiModel,
                                 modifier = Modifier.align(Alignment.CenterHorizontally))
                         }
                         Column(
-                            modifier = Modifier.padding(15.dp)
+                            modifier = Modifier.fillMaxHeight().padding(15.dp),
+                            verticalArrangement = Arrangement.Center
                         ) {
                             val userName = remember{ mutableStateOf("")}
+                            val userSignature = remember{ mutableStateOf("")}
+
+                            val focusRequester = FocusRequester()
+
                             OutlinedTextField(value = userName.value, onValueChange = {
                                 userName.value = it
+                                userCardViewModel.updateLastSelected(user.uid, it, user.last!!, user.signature)
                             },
-                                modifier = Modifier.height(60.dp),
+                                modifier = Modifier.height(60.dp).focusRequester(focusRequester),
                                 label = {Text("你の名字")},
                                 singleLine = true,
                                 textStyle = MaterialTheme.typography.caption
                             )
                             Spacer(modifier = Modifier.padding(vertical = 10.dp))
 
-                            OutlinedTextField(value = userName.value, onValueChange = {
-                                userName.value = it
+                            OutlinedTextField(value = userSignature.value, onValueChange = {
+                                userSignature.value = it
+                                userCardViewModel.updateLastSelected(user.uid, user.userName, user.last!!, it)
                             },
                                 modifier = Modifier.height(150.dp),
                                 label = {Text("你の签名/状态")},
@@ -600,6 +609,12 @@ fun DisplayDrawerContent(
                 viewModel.requestCloseDrawer = false
             }
         }
+
+
+        LaunchedEffect(scaffoldState.drawerState.isOpen) {    // 检测菜单是否已经打开
+            viewModel.draweringPage = true
+        }
+
 
         LaunchedEffect(scaffoldState.drawerState.isClosed) {    // 检测菜单是否已通过任何方式关闭
             if(scaffoldState.drawerState.isClosed) {

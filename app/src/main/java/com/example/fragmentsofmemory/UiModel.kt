@@ -3,9 +3,12 @@ package com.example.fragmentsofmemory
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.Image
 import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.registerForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.core.content.ContextCompat.startActivity
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import com.google.accompanist.coil.CoilImage
@@ -94,6 +98,18 @@ class UiModel: ViewModel(){
     fun endEditProfile(){
         editingProfile = false
     }
+
+    fun startShare(context: Context, message:String) {
+        val sendIntent: Intent = Intent().apply { // 分享 Intent
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, message)
+            type = "text/plain"
+           // MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "选择分享到哪里吧 ~")
+        startActivity(context, shareIntent, Bundle())
+    }
+
     @Composable
     fun SetBackground(background: Int): Unit{
         return Image(painter = painterResource(id = background), contentDescription = null,

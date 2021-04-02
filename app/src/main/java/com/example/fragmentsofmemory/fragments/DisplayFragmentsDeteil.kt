@@ -11,10 +11,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fragmentsofmemory.Database.UserInfo
 import com.example.fragmentsofmemory.R
@@ -56,7 +59,8 @@ fun DeteilPage(
                 Text(text = user.userName,
                     modifier = Modifier.align(Alignment.CenterVertically),
                     fontWeight = FontWeight.W900,
-                    style = MaterialTheme.typography.body1)
+                    style = MaterialTheme.typography.body1,
+                    color = Color.White)
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                     Row(){
                         Text(text = viewModel.timeResult, fontWeight = FontWeight.Bold,
@@ -73,7 +77,9 @@ fun DeteilPage(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Column() {
+                    Column(modifier = Modifier.fillMaxSize()){
+
+                        val textAlign = remember{mutableStateOf(TextAlign.Left)}
 
                         SelectionContainer {
                             Text(
@@ -82,27 +88,49 @@ fun DeteilPage(
                                     .fillMaxWidth()
                                     .padding(start = 15.dp, end = 15.dp, top = 15.dp),
                                 fontWeight = FontWeight.W500,
+                                textAlign = textAlign.value
                             )
                         }
-                        Row(horizontalArrangement = Arrangement.spacedBy((-15).dp), modifier = Modifier.align(Alignment.End)){
-                            IconButton(onClick = {
-                                viewModel.reading = false
-                                viewModel.startEdit(viewModel.cardId, viewModel.testTxt, viewModel.timeResult)
-                            }) {
-                                Icon((Icons.Rounded.Create), contentDescription = null, modifier = viewModel.iconSize)
+                        Row(modifier = Modifier.fillMaxHeight().fillMaxWidth(), verticalAlignment = Alignment.Bottom){
+                            Column() {
+                                Row(horizontalArrangement = Arrangement.spacedBy((-15).dp), modifier = Modifier.align(Alignment.Start)){
+                                    IconButton(onClick = {
+                                        textAlign.value = TextAlign.Left
+                                    }) {
+                                        Icon((Icons.Rounded.FormatAlignLeft), contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                    IconButton(onClick = {
+                                        textAlign.value = TextAlign.Center
+                                    }) {
+                                        Icon(Icons.Rounded.FormatAlignCenter, contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                    IconButton(onClick = {
+                                        textAlign.value = TextAlign.Right
+                                    }) {
+                                        Icon(Icons.Rounded.FormatAlignRight, contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                }
                             }
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(Icons.Rounded.Share, contentDescription = null, modifier = viewModel.iconSize)
-                            }
-                            IconButton(onClick = {
-                                viewModel.deleteCard(userCardViewModel)
-                                /*
-                                userCardViewModel.RemoveDataBase(viewModel.cardId)
-                                viewModel.reading = false
-                                viewModel.maining = true*/
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Row(horizontalArrangement = Arrangement.spacedBy((-15).dp), modifier = Modifier.align(Alignment.End)){
+                                    IconButton(onClick = {
+                                        viewModel.reading = false
+                                        viewModel.startEdit(viewModel.cardId, viewModel.testTxt, viewModel.timeResult)
+                                    }) {
+                                        Icon((Icons.Rounded.Create), contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                    IconButton(onClick = {
+                                        viewModel.startShare(context, viewModel.testTxt)
+                                    }) {
+                                        Icon(Icons.Rounded.Share, contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                    IconButton(onClick = {
+                                        viewModel.deleteCard(userCardViewModel)
 
-                            }) {
-                                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = viewModel.iconSize)
+                                    }) {
+                                        Icon(Icons.Rounded.Delete, contentDescription = null, modifier = viewModel.iconSize)
+                                    }
+                                }
                             }
                         }
                     }

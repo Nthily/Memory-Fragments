@@ -131,7 +131,9 @@ fun CreateMemory(viewModel: UiModel,
                                     modifier = viewModel.iconSize
                                 )
                             }
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = {
+                                viewModel.startShare(context, userContent)
+                            }) {
                                 Icon(
                                     Icons.Rounded.Share,
                                     contentDescription = null,
@@ -234,6 +236,7 @@ fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineSco
                 letterSpacing = 0.15.sp
             ), fontWeight = FontWeight.W700, modifier = Modifier.padding(end = 7.dp))
         },
+        /*
         actions = {
             IconButton(onClick = {
                 if(viewModel.maining){
@@ -247,6 +250,8 @@ fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineSco
                 Icon(painter = painterResource(id = R.drawable.dark_mode_24px), contentDescription = "Localized description")
             }
         },
+
+         */
         navigationIcon = {
             IconButton(onClick = {
                 popUpDrawer(scaffoldState, scope)
