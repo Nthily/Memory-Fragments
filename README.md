@@ -1,4 +1,4 @@
-## Created with Jetpack Compose + room 
+## A beautiful interface created through Jetpack Compose
 
 ## ⛏ Work in progress
 
