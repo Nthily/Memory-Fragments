@@ -32,6 +32,7 @@ import java.time.format.TextStyle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,11 +77,13 @@ fun PageContent(viewModel: UiModel, file: File, context: Context) {
             .fillMaxWidth()
             .height(300.dp),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color(255, 255, 255, 1)),
-            textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900)
+            backgroundColor = Color(255, 255, 255, 1)),
+            textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900),
+            maxLines = Int.MAX_VALUE
         )
 
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
 
         Row(
             modifier = Modifier
@@ -114,6 +117,7 @@ fun PageContent(viewModel: UiModel, file: File, context: Context) {
                 }
             }
         }
+
     }
 }
 
@@ -152,7 +156,7 @@ fun AddingPage(dialogViewModel: DialogViewModel,
                         }
                     },
                     actions = {
-                        Text(text = "完成", modifier = Modifier
+                        Text(text = "完成", style = MaterialTheme.typography.body1,modifier = Modifier
                             .padding(horizontal = 10.dp)
                             .clickable(
                                 onClick = {

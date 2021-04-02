@@ -45,26 +45,22 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentsofmemory.Database.UserInfo
-import com.google.accompanist.coil.CoilImage
-import com.google.accompanist.glide.GlideImage
 import com.yalantis.ucrop.UCrop
 import java.io.*
-import java.net.URI
 import kotlin.math.roundToInt
 
 
-fun uploadPicture(file:File, context: Context, viewModel: UiModel) {
+fun uploadPicture(context: Context, viewModel: UiModel) {
     try {
-        UCrop.of(viewModel.imageUriState.value!!, Uri.fromFile(file))
-            .withAspectRatio(1.0F, 1.0F)
+        viewModel.userAvatarUploading = File.createTempFile("avatar", null)
+        val options = UCrop.Options()
+        options.setCircleDimmedLayer(true)
+        options.setShowCropGrid(false)
+        options.setShowCropFrame(false)
+        UCrop.of(viewModel.imageUriState.value!!, Uri.fromFile(viewModel.userAvatarUploading))
+            .withAspectRatio(1.0F, 1.0F).withOptions(options)
             .start(context as Activity)
 
         /*val getIS = context.contentResolver.openInputStream(viewModel.imageUriState.value!!) //基本上传文件代码
@@ -76,10 +72,8 @@ fun uploadPicture(file:File, context: Context, viewModel: UiModel) {
         os.close()*/
 
     } catch (e:IOException) {
-        Toast.makeText(context, "Upload failed", Toast.LENGTH_LONG).show()
-        Log.w("ExternalStorage", "Error writing $file", e);
+        Toast.makeText(context, "读取失败", Toast.LENGTH_LONG).show()
     }
-  //  Toast.makeText(context, "更新头像成功", Toast.LENGTH_LONG).show()
 }
 
 
@@ -99,13 +93,12 @@ fun DrawerInfo(viewModel:UiModel,
   //  val file = File(context.getExternalFilesDir(null), "picture.jpg")
 
     val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        viewModel.imageUriState.value = it
-        // Handle the returned Uri
-    }
-
-    if (viewModel.imageUriState.value != null) {
-        uploadPicture(file, context, viewModel)
-        viewModel.imageUriState.value = null
+        if(it != null) {
+            viewModel.imageUriState.value = it
+            uploadPicture(context, viewModel)
+            Log.d(TAG, "omgggggggggggggggggggggg: $it")
+            // Handle the returned Uri
+        }
     }
 
     Column(modifier = Modifier

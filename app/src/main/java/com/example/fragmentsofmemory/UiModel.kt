@@ -1,6 +1,7 @@
 package com.example.fragmentsofmemory
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.Image
@@ -77,8 +78,8 @@ class UiModel: ViewModel(){
 
 
     val imageUriState = mutableStateOf<Uri?>(null)
-
-    var userAvatar by mutableStateOf(Uri.EMPTY)
+    var userAvatarUploading by mutableStateOf<File?>(null) //上传头像的临时文件
+    var userAvatarPath by mutableStateOf("") // 用户头像所在的路径
 
 
     fun endReading() {
@@ -143,17 +144,9 @@ class UiModel: ViewModel(){
 
     @Composable
     fun InitUserProfilePic(file:File, context: Context) {
-        /*if(file.exists()){
-            CoilImage(Uri.fromFile(file), null, fadeIn = true)
-        } else {
-            Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
-        }*/
-        if(userAvatar.equals(Uri.EMPTY) && file.exists()) {
-            userAvatar = Uri.fromFile(file)
-        }
 
-        if(!userAvatar.equals(Uri.EMPTY)) {
-            CoilImage(userAvatar, null)
+        if(!userAvatarPath.isNullOrEmpty()) {
+            CoilImage(Uri.fromFile(File(userAvatarPath)), null)
         } else {
             Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
         }

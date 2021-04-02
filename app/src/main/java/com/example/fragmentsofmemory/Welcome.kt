@@ -54,6 +54,7 @@ import com.google.accompanist.coil.CoilImage
 import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.delay
 import java.io.File
+import java.nio.file.Files.move
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -66,10 +67,10 @@ class Welcome : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            viewModel.userAvatar = UCrop.getOutput(data!!)
+            File(viewModel.userAvatarPath).createNewFile()
+            viewModel.userAvatarUploading!!.copyTo(File(viewModel.userAvatarPath), true)
             Toast.makeText(this, "更新头像成功", Toast.LENGTH_LONG).show()
         } else if(resultCode == UCrop.RESULT_ERROR) {
-            viewModel.userAvatar = Uri.EMPTY
             Toast.makeText(this, "更新头像失败", Toast.LENGTH_LONG).show()
         }
     }
@@ -80,22 +81,13 @@ class Welcome : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                Log.d(TAG, "wtf wt f + ${result.data}")
-            }
-
-        }
-
-         */
-
-
         setContent{
             val context = LocalContext.current
             val file = File(context.getExternalFilesDir(null), "picture.jpg")
             val navController = rememberNavController()
             val user: UserInfo? by userCardViewModel.user.observeAsState()
+
+            viewModel.userAvatarPath = file.absolutePath
 
                NavHost(navController, startDestination = "welcome") {
                 composable("welcome") { WelcomePage( viewModel, navController,file, context) }
