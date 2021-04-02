@@ -107,9 +107,9 @@ class Welcome : AppCompatActivity() {
         when(true){
             (viewModel.adding && viewModel.textModify != "") -> dialogViewModel.openDialog = true
             viewModel.adding -> viewModel.endAddPage()
-            viewModel.draweringPage -> viewModel.closeDrawerContent()
+            (viewModel.draweringPage && !viewModel.editingProfile) -> viewModel.closeDrawerContent()
             viewModel.reading -> viewModel.endReading()
-            viewModel.editingProfile -> viewModel.endEditProfile() // TODO 在 UiModel 写函数
+            viewModel.editingProfile -> viewModel.endEditProfile()
             else -> super.onBackPressed()
         }
     }

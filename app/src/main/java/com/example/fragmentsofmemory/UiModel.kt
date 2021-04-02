@@ -93,7 +93,6 @@ class UiModel: ViewModel(){
 
     fun endEditProfile(){
         editingProfile = false
-        draweringPage = true
     }
     @Composable
     fun SetBackground(background: Int): Unit{

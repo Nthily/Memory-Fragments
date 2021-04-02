@@ -22,8 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +42,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.IntOffset
@@ -150,7 +147,8 @@ fun DrawerInfo(viewModel:UiModel,
                         IconButton(onClick = {
                             viewModel.editingProfile = !viewModel.editingProfile
                         }) {
-                            Icon(Icons.Rounded.Edit, contentDescription = "")
+                            if(viewModel.editingProfile)Icon(Icons.Rounded.ArrowBack, contentDescription = "")
+                            else Icon(Icons.Rounded.Edit, contentDescription = "")
                         }
                     }
 
