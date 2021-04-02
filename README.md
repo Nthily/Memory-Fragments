@@ -3,7 +3,7 @@
 ## ⛏ Work in progress
 
 ## 🙌 Description
-#### Stores everything you record, supports deletion and editing, and supports sorting functions
+### Stores everything you record, supports deletion and editing, and supports sorting functions
 
 
 
