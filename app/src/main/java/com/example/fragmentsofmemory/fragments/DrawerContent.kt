@@ -445,7 +445,7 @@ fun DrawerInfo(viewModel:UiModel,
                             Surface(
                                 shape = CircleShape,
                                 modifier = Modifier
-                                    .padding(15.dp)
+                                    .padding(12.dp)
                                     .size(60.dp)
                                     .clip(shape = CircleShape)
                                     .clickable {
@@ -457,22 +457,29 @@ fun DrawerInfo(viewModel:UiModel,
                             }
                             Text("编辑头像",
                                 style = MaterialTheme.typography.caption,
-                                modifier = Modifier.align(Alignment.CenterHorizontally))
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                color = Color.DarkGray)
                         }
                         Column(
-                            modifier = Modifier.fillMaxHeight().padding(15.dp),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(start = 15.dp , end = 25.dp, top = 15.dp, bottom = 15.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
                             val userName = remember{ mutableStateOf("")}
                             val userSignature = remember{ mutableStateOf("")}
 
                             val focusRequester = FocusRequester()
-
+                            LaunchedEffect(true) {
+                                focusRequester.requestFocus()
+                            }
                             OutlinedTextField(value = userName.value, onValueChange = {
                                 userName.value = it
                                 userCardViewModel.updateLastSelected(user.uid, it, user.last!!, user.signature)
                             },
-                                modifier = Modifier.height(60.dp).focusRequester(focusRequester),
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .focusRequester(focusRequester),
                                 label = {Text("你の名字")},
                                 singleLine = true,
                                 textStyle = MaterialTheme.typography.caption
