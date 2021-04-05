@@ -48,6 +48,7 @@ import coil.size.ViewSizeResolver
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.glide.GlideImage
 import java.io.File
+import java.util.Date
 
 class UiModel: ViewModel(){
    // var theme by mutableStateOf(MyTheme.Theme.Dark)
@@ -60,7 +61,7 @@ class UiModel: ViewModel(){
     var draweringPage by mutableStateOf(false) // 判断是否打开了汉堡菜单
     var requestCloseDrawerPage by mutableStateOf(false) // 请求关闭汉堡菜单
 
-    var hasAnyExtraButtonRevealed by mutableStateOf(false)
+    var hasAnyExtraButtonRevealed by mutableStateOf(false)  // 是否有任何分类被滑动并出现附加按钮
 
     var reading by mutableStateOf(false) // 是否在阅读卡片详细内容
 
@@ -77,13 +78,13 @@ class UiModel: ViewModel(){
     var textModify by mutableStateOf("")
     var editing by mutableStateOf(false)
 
-    var addNewCategory by mutableStateOf(false)
+    var addNewCategory by mutableStateOf(false) // 当前是否正在添加新分类
     var categoryName by mutableStateOf("")
 
     var requestCloseDrawer by mutableStateOf(false)
 
 
-    var editingCategory by mutableStateOf(false) //启用编辑分类状态
+    var editingCategory by mutableStateOf(false) // 当前是否正在编辑分类名称
     var editingCategoryUid by mutableStateOf(0)
 
 
@@ -93,11 +94,12 @@ class UiModel: ViewModel(){
     var userAvatarPath by mutableStateOf("") // 用户头像所在的路径
 
 
-    var editingProfile by mutableStateOf(false)
+    var editingProfile by mutableStateOf(false) // 当前是否正在编辑用户信息
 
     var requestDeleteCard by mutableStateOf(false)
 
-    var enableCancelButton by mutableStateOf(false)
+
+    var currentTitle by mutableStateOf("")
 
     fun endReading() {
         reading = false
@@ -173,13 +175,13 @@ class UiModel: ViewModel(){
 
     @Composable
     fun InitUserProfilePic() {
+
+        // 处理不自动更新的 Bug
         val avatar = File(if(userAvatarUploadedPath.isEmpty()) userAvatarPath else userAvatarUploadedPath)
 
         if(avatar.exists()) {
             CoilImage(Uri.fromFile(avatar), null)
-
         } else {
-            Log.d(TAG, "not exist!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
         }
     }

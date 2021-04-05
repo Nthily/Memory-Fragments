@@ -24,6 +24,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -45,6 +46,7 @@ import com.example.fragmentsofmemory.ui.theme.MyTheme
 import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.delay
 import java.io.File
+import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -67,6 +69,7 @@ class Welcome : AppCompatActivity() {
     }
 
 
+    @ExperimentalComposeUiApi
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +80,6 @@ class Welcome : AppCompatActivity() {
             val file = File(context.getExternalFilesDir(null), "picture.jpg")
             val navController = rememberNavController()
             val user: UserInfo? by userCardViewModel.user.observeAsState()
-
             viewModel.userAvatarPath = file.absolutePath
 
                NavHost(navController, startDestination = "welcome") {

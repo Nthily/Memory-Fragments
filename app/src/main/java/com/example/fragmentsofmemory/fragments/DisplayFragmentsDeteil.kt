@@ -64,7 +64,7 @@ fun DeteilPage(
                     color = Color.White)
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                     Row(){
-                        Text(text = viewModel.timeResult, fontWeight = FontWeight.Bold,
+                        Text(text = viewModel.timeResult.toString(), fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.body1)
                     }
                 }

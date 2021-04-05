@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.fragmentsofmemory.Database.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.Date
 
 
 @Database(entities = [UserCard::class, DrawerItems::class, UserInfo::class], version = 1)
@@ -27,7 +28,6 @@ abstract class AppDatabase : RoomDatabase() {
                     val drawer = database.getDrawer()
                     val info = database.getUserInfo()
 
-                    //drawer.insert(DrawerItems(0, "Home"))
                     dao.insert(UserCard(0, null, "Hello World", "2021.3.28"))
                     info.insert(UserInfo(0, "Nthily", null, "永远相信美好的事情即将发生"))
                 }

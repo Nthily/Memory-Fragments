@@ -11,25 +11,31 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.twotone.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -47,8 +53,11 @@ import com.example.fragmentsofmemory.Database.UserCard
 import com.example.fragmentsofmemory.Database.UserInfo
 import com.example.fragmentsofmemory.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @Composable
@@ -56,25 +65,28 @@ fun CreateMemory(viewModel: UiModel,
                  userName:String,
                  userContent:String,
                  memoryOrder:Int,
-                 time:String,
+                 time: String,
                  userCardViewModel: UserCardViewModel,
                  cardID:Int,
                  file: File,
+                 categoryID: Int?,
                  context: Context) {
 
     Card(elevation = 10.dp, modifier = Modifier
+        .clip(shape = RoundedCornerShape(14.dp))
         .padding(20.dp)
-        .clip(RoundedCornerShape(14.dp))) {
+    ) {
         Column(
             modifier = Modifier
-                .clip(RoundedCornerShape(14.dp))
+                .clip(shape = RoundedCornerShape(14.dp))
+
                 .clickable {
                     if (viewModel.maining) {
                         viewModel.testTxt = userContent
                         viewModel.reading = true
                         viewModel.cardId = cardID
                         viewModel.maining = false
-                        viewModel.timeResult = time
+                        viewModel.timeResult = ""
                     }
                     viewModel.draweringPage = false
                 },
@@ -100,7 +112,7 @@ fun CreateMemory(viewModel: UiModel,
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(modifier = Modifier.align(Alignment.End), verticalAlignment = Alignment.CenterVertically){
-                        Text(text = "#$memoryOrder", fontWeight = FontWeight.Bold)
+                        // Text(text = "#$memoryOrder", fontWeight = FontWeight.Bold)
                         IconButton(onClick = {
                         }) {
                             Icon(painter = painterResource(id = R.drawable.more_horiz_24px), contentDescription = null)
@@ -108,15 +120,33 @@ fun CreateMemory(viewModel: UiModel,
                     }
                 }
             }
+
+            // 正文
             Text(userContent, maxLines = 7,overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.body2, modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, top = 10.dp),)
+                .padding(start = 10.dp, top = 10.dp))
+
+
+            val categories by userCardViewModel.drawer.observeAsState()
+            val categoryName = categories?.find { it.uid == categoryID }?.drawerItems
+
 
             Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = time, modifier = Modifier.padding(8.dp), fontWeight = FontWeight.W800, style = MaterialTheme.typography.body2)
+                    if(time.isNotBlank()) {
+                        Text(
+                            text = time,
+                            modifier = Modifier.padding(8.dp),
+                            fontWeight = FontWeight.W800,
+                            style = MaterialTheme.typography.body2,
+                            color = Color.Gray
+                        )
+                    }
+                    if(categoryName != null) {
+                        NormalTab(categoryName)
+                    }
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy((-15).dp),
@@ -132,7 +162,9 @@ fun CreateMemory(viewModel: UiModel,
                                 )
                             }
                             IconButton(onClick = {
-                                viewModel.startShare(context, userContent)
+                                if(viewModel.maining){
+                                    viewModel.startShare(context, userContent)
+                                }
                             }) {
                                 Icon(
                                     Icons.Rounded.Share,
@@ -159,25 +191,6 @@ fun CreateMemory(viewModel: UiModel,
     }
 }
 
-
-@Composable
-fun AlertNoCard() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "该分类下还没有任何记忆碎片噢~ _(:з)∠)_",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
 @Composable
 fun ShowAllCards(viewModel: UiModel,
                  items: List<UserCard>,
@@ -188,28 +201,39 @@ fun ShowAllCards(viewModel: UiModel,
 
     Column(modifier = Modifier.fillMaxHeight()) {
 
+        val cardColumnState = rememberLazyListState(0)
+
+        /*LaunchedEffect(user.last) {
+            cardColumnState.animateScrollToItem(0)
+        }*/
+
         LazyColumn(
             modifier = Modifier
                 .weight(1f),
-            reverseLayout = true, state = LazyListState(items.size)
+            reverseLayout = true, state = cardColumnState
         ) {
-            items(items.size) {
-                Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                    // null 表示所有分类
-                    if(user.last == null || items[it].categoryID == user.last) {
-                        CreateMemory(
-                            viewModel = viewModel,
-                            userName = user.userName,
-                            userContent = items[it].content,
-                            time = items[it].time,
-                            memoryOrder = it + 1,
-                            userCardViewModel = userCardViewModel,
-                            cardID = items[it].id,
-                            file = file,
-                            context = context
-                        )
+            items(items.size + 1) {
+                if(it < items.size) {
+                    Column(verticalArrangement = Arrangement.SpaceEvenly) {
+                        // null 表示所有分类
+                        if (user.last == null || items[it].categoryID == user.last) {
+                            CreateMemory(
+                                viewModel = viewModel,
+                                userName = user.userName,
+                                userContent = items[it].content,
+                                time = items[it].time,
+                                memoryOrder = it + 1,
+                                userCardViewModel = userCardViewModel,
+                                cardID = items[it].id,
+                                file = file,
+                                categoryID = items[it].categoryID,
+                                context = context
+                            )
+                        }
+                        // Spacer(modifier = Modifier.padding(vertical = 5.dp))
                     }
-                    // Spacer(modifier = Modifier.padding(vertical = 5.dp))
+                } else {
+                    Spacer(modifier = Modifier.height(50.dp))
                 }
             }
         }
@@ -230,28 +254,22 @@ fun popUpDrawer(scaffoldState: ScaffoldState, scope: CoroutineScope) {
 fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineScope) {
     TopAppBar(
         title = {
-            Text(text = "记忆碎片", style = TextStyle(
+            Text(text = viewModel.currentTitle, style = TextStyle(
                 fontWeight = FontWeight.Medium,
                 fontSize = 19.sp,
                 letterSpacing = 0.15.sp
             ), fontWeight = FontWeight.W700, modifier = Modifier.padding(end = 7.dp))
         },
-        /*
+
         actions = {
             IconButton(onClick = {
-                if(viewModel.maining){
-
-                    viewModel.lightTheme = when(viewModel.lightTheme){
-                        viewModel.lightTheme -> !viewModel.lightTheme
-                        else -> viewModel.lightTheme
-                    }
-                }
+                // TODO: 下个版本添加搜索 1.0 完工
             }) {
-                Icon(painter = painterResource(id = R.drawable.dark_mode_24px), contentDescription = "Localized description")
+                Icon(Icons.TwoTone.Search, contentDescription = "Localized description", tint = Color.White)
             }
         },
 
-         */
+
         navigationIcon = {
             IconButton(onClick = {
                 popUpDrawer(scaffoldState, scope)
@@ -266,12 +284,15 @@ fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineSco
 
 
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, file: File, context: Context, user:UserInfo) {
 
-    val scaffoldState = rememberScaffoldState()
+    val scaffoldState = rememberScaffoldState(drawerState = DrawerState(DrawerValue.Closed) {
+        (it == DrawerValue.Closed) || viewModel.maining
+    })
     val scope = rememberCoroutineScope()
 
     val userCardValue: List<UserCard>? by userCardViewModel.allCards.observeAsState()
@@ -316,7 +337,6 @@ fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, 
         drawerContent = {
             drawerItems?.let {
                 user.let { it1 ->
-
                     DisplayDrawerContent(
                         viewModel = viewModel,
                         scaffoldState = scaffoldState,
@@ -337,4 +357,5 @@ fun HomePageEntrances(viewModel: UiModel, userCardViewModel: UserCardViewModel, 
         },
         drawerBackgroundColor = Color(255, 255 ,255 ,215),
     )
+
 }

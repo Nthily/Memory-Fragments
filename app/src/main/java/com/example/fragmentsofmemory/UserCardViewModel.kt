@@ -1,19 +1,14 @@
 package com.example.fragmentsofmemory
 import android.app.Application
-import android.content.ContentValues.TAG
-import android.util.Log
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
 import com.example.fragmentsofmemory.Database.CategoryCardCount
 import com.example.fragmentsofmemory.Database.DrawerItems
 import com.example.fragmentsofmemory.Database.UserCard
 import com.example.fragmentsofmemory.Database.UserInfo
 import kotlinx.coroutines.*
+import java.util.Date
 
 class UserCardViewModel(application: Application): AndroidViewModel(application){
 

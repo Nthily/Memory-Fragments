@@ -49,6 +49,7 @@ import com.example.fragmentsofmemory.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Date
 
 var userContent = mutableStateOf("")
 
@@ -113,11 +114,11 @@ fun PageContent(viewModel: UiModel, file: File, context: Context) {
                 Row{
                     Button(onClick = {
                         viewModel.timing = true
-                    }, colors = if(viewModel.timeResult != "") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1DC792))
+                    }, colors = if(viewModel.timeResult != "") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF48C785))
                     else ButtonDefaults.buttonColors(MaterialTheme.colors.primary), modifier = Modifier
                         .animateContentSize()
                         .padding(5.dp)) {
-                        Text(if(viewModel.timeResult != "") "时间存储完毕！"
+                        Text(if(viewModel.timeResult != "") viewModel.timeResult
                         else "请选择记忆的时间吧~")
                     }
                 }

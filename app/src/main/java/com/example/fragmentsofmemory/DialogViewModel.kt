@@ -1,28 +1,35 @@
 package com.example.fragmentsofmemory
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fragmentsofmemory.Database.DrawerItems
 import com.example.fragmentsofmemory.fragments.userContent
+import kotlinx.coroutines.delay
+import java.util.Date
 
 class DialogViewModel: ViewModel() {
     var openDialog by  mutableStateOf(false)
@@ -32,7 +39,7 @@ class DialogViewModel: ViewModel() {
 
         if (openDialog) {
 
-            if(viewModel.textModify == ""){
+            if(viewModel.textModify.isBlank()){     // 内容为空或只包含不可见字符（空格、换行等）
                 openDialog = false
                 viewModel.adding = false
                 viewModel.maining = true
@@ -50,7 +57,7 @@ class DialogViewModel: ViewModel() {
                         Text(text = "还有没写完的东西呐,你确定要退出🐎")
                     },
                     text = {
-                        Text(text = "埃拉我i耨爱三到四阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿u暗送不低啊建瓯市第")
+                        Text(text = "埃拉我i耨爱三到四阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿阿斯顿u暗送不低啊建瓯市第???")
                     },
                     confirmButton = {
                         TextButton(
@@ -125,9 +132,24 @@ class DialogViewModel: ViewModel() {
     }*/
 
 
+    @ExperimentalComposeUiApi
     @Composable
     fun PopUpAlertDialogDrawerItems(viewModel: UiModel, userCardViewModel: UserCardViewModel) {
+        val focus = FocusRequester()
+        val keyboard = LocalSoftwareKeyboardController.current
+
         if(viewModel.addNewCategory || viewModel.editingCategory) {
+
+            val categoryName0 by remember { mutableStateOf(viewModel.categoryName) }    // 正在编辑的分类的原名称
+            var categoryName by remember { mutableStateOf(viewModel.categoryName) }
+
+            val error1 = categoryName.isBlank()    // 分类名称为空错误
+            val error2 = userCardViewModel.drawer.value?.any {    // 分类名称已存在错误
+                val con = it.drawerItems.trimEnd() == categoryName.trimEnd()
+                (viewModel.addNewCategory && con)
+                        || (viewModel.editingCategory && con && it.uid != viewModel.editingCategoryUid)
+            } ?: true
+
             AlertDialog(
 
                 onDismissRequest = {
@@ -135,44 +157,83 @@ class DialogViewModel: ViewModel() {
                     // button. If you want to disable that functionality, simply use an empty
                     // onCloseRequest.
                     viewModel.addNewCategory = false
+                    viewModel.editingCategory = false
                 },
                 title = {
-                    Text(if(viewModel.editingCategory) "修改名字啦~" else "添加新的分类~")
+                    Text(if(viewModel.editingCategory) "修改分类 \"${categoryName0}\" 的名字啦~" else "添加新的分类~")
                 },
                 text = {
-                       Column(modifier = Modifier.padding(top = 10.dp)) {
-                           Row(){
-                               Surface(
-                                   shape = CircleShape,
-                                   color = (Color(208, 207, 209)),
-                                   modifier = Modifier.size(20.dp).clickable {
-                                   }.align(Alignment.CenterVertically)
-                               ) {
 
+                   Column(modifier = Modifier.padding(top = 10.dp)) {
+
+
+
+                       Row(){
+                           // TODO: 下个版本再添加选择分类图标功能
+                           /*Surface(
+                               shape = CircleShape,
+                               color = (Color(208, 207, 209)),
+                               modifier = Modifier
+                                   .size(20.dp)
+                                   .clickable {
+                                   }
+                                   .align(Alignment.CenterVertically)
+                           ) {
+
+                           }*/
+
+                           TextField(value = categoryName, onValueChange = {
+                               categoryName = it.replace("\n", "")
+                           },
+                               isError = error1 || error2,
+                               modifier = Modifier.focusRequester(focus),
+                               colors = TextFieldDefaults.textFieldColors(
+                                   backgroundColor = Color(255, 255, 255, 1)),
+                               textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900),
+                               singleLine = true,
+                               maxLines = 1
+                           )
+                           LaunchedEffect(viewModel.addNewCategory) {
+                               if(viewModel.addNewCategory) {
+                                   delay(300)
+                                   focus.requestFocus()
+                                   keyboard?.showSoftwareKeyboard()
                                }
-                               TextField(value = viewModel.categoryName, onValueChange = {
-                                   viewModel.categoryName = it.replace("\n", "")
-                               },
-                                   colors = TextFieldDefaults.textFieldColors(
-                                       backgroundColor = Color(255, 255, 255, 1)),
-                                   textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.W900),
-
-                                   singleLine = true)
                            }
+                           LaunchedEffect(viewModel.editingCategory) {
+                               if(viewModel.editingCategory) {
+                                   delay(300)
+                                   focus.requestFocus()
+                                   keyboard?.showSoftwareKeyboard()
+                               }
+                           }
+
                        }
+                       if(error2) {
+                           Text("* 该分类已存在", modifier = Modifier.padding(5.dp), style = MaterialTheme.typography.body2, color = Color(0xFFD53030))
+                       }
+                   }
+
+                    /*LaunchedEffect(viewModel.editingCategory) {
+                        if(viewModel.editingCategory) {
+                            focus.requestFocus()
+                            delay(500)
+                            keyboard?.showSoftwareKeyboard()
+                        }
+                    }*/
                 },
                 confirmButton = {
                     TextButton(
+                        enabled = !(error1 || error2),
                         onClick = {
                             if(viewModel.addNewCategory) {
-                                userCardViewModel.addCategoryDataBase(viewModel.categoryName)
+                                userCardViewModel.addCategoryDataBase(categoryName)
                                 viewModel.addNewCategory = false
                                 viewModel.categoryName = ""
                             }
 
                             if(viewModel.editingCategory){
-
-                                userCardViewModel.updateCategoryDataBaseName(viewModel.editingCategoryUid, viewModel.categoryName)
+                                userCardViewModel.updateCategoryDataBaseName(viewModel.editingCategoryUid, categoryName)
                                 viewModel.editingCategory = false
                                 viewModel.categoryName = ""
                             }
@@ -194,6 +255,7 @@ class DialogViewModel: ViewModel() {
                 },
             )
         }
+
     }
 
 
