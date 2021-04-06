@@ -423,25 +423,7 @@ fun UserInfoColumn(viewModel:UiModel,
             }
 
             Column {
-                /*Text(
-                    text = user.userName,
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.W900,
-                    modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp),
-                    color = Color.White
-                )
-                Text(
-                    text = user.signature,
-                    style = MaterialTheme.typography.overline,
-                    fontWeight = FontWeight.W900,
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        top = 8.dp,
-                        end = 15.dp,
-                        bottom = 15.dp
-                    ),
-                    color = Color.White
-                )*/
+
                 var userName by remember { mutableStateOf(user.userName) }
                 BasicTextField(
                     enabled = viewModel.editingProfile,

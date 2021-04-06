@@ -83,8 +83,8 @@ fun CreateMemory(viewModel: UiModel,
                     shape = CircleShape,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                 ) {
+                    // get user avatar
                     viewModel.InitUserProfilePic()
-                  //  Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
                 }
 
                 Column (modifier = Modifier.padding(start = 5.dp)){
@@ -92,7 +92,7 @@ fun CreateMemory(viewModel: UiModel,
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(modifier = Modifier.align(Alignment.End), verticalAlignment = Alignment.CenterVertically){
-                        // Text(text = "#$memoryOrder", fontWeight = FontWeight.Bold)
+                        // Text(text = "#$memoryOrder", fontWeight = FontWeight.Bold) 取消卡片的数量顺序 Cancel the order of the number of cards
                         IconButton(onClick = {
                         }) {
                             Icon(painter = painterResource(id = R.drawable.more_horiz_24px), contentDescription = null)
@@ -183,10 +183,6 @@ fun ShowAllCards(viewModel: UiModel,
 
         val cardColumnState = rememberLazyListState(0)
 
-        /*LaunchedEffect(user.last) {
-            cardColumnState.animateScrollToItem(0)
-        }*/
-
         LazyColumn(
             modifier = Modifier
                 .weight(1f),
@@ -196,6 +192,8 @@ fun ShowAllCards(viewModel: UiModel,
                 if(it < items.size) {
                     Column(verticalArrangement = Arrangement.SpaceEvenly) {
                         // null 表示所有分类
+                        // null indicates all categories
+
                         if (user.last == null || items[it].categoryID == user.last) {
                             CreateMemory(
                                 viewModel = viewModel,
@@ -210,7 +208,6 @@ fun ShowAllCards(viewModel: UiModel,
                                 context = context
                             )
                         }
-                        // Spacer(modifier = Modifier.padding(vertical = 5.dp))
                     }
                 } else {
                     Spacer(modifier = Modifier.height(50.dp))
@@ -244,6 +241,7 @@ fun TopBar(viewModel: UiModel, scaffoldState: ScaffoldState, scope: CoroutineSco
         actions = {
             IconButton(onClick = {
                 // TODO: 下个版本添加搜索 1.0 完工
+                // TODO: Next version adds search
             }) {
                 Icon(Icons.TwoTone.Search, contentDescription = "Localized description", tint = Color.White)
             }

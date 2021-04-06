@@ -30,8 +30,6 @@ import java.io.File
 @Composable
 fun DeteilPage(
     viewModel: UiModel,
-    appViewModel: AppViewModel,
-    file: File,
     context: Context,
     user:UserInfo) {
 
@@ -147,8 +145,6 @@ fun DeteilPage(
 
 @Composable
 fun ReadingFragments(viewModel: UiModel,
-                     appViewModel: AppViewModel,
-                     file: File,
                      context: Context,
                      user: UserInfo) {
 
@@ -162,7 +158,7 @@ fun ReadingFragments(viewModel: UiModel,
     ) {
         Scaffold(
             content = {
-                DeteilPage(viewModel, appViewModel,file,context, user)
+                DeteilPage(viewModel,context, user)
             },
 
             topBar = {
@@ -176,20 +172,6 @@ fun ReadingFragments(viewModel: UiModel,
                             Icon(Icons.Rounded.ArrowBack, contentDescription = null)
                         }
                     },
-                    /*
-                    actions = {
-                        Text(text = "完成", modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .clickable(
-                                onClick = {
-                                    viewModel.finishDialog = true
-                                    //    userCardViewModel.AddDatabase("香辣鸡腿堡", userContent.value, "今天")
-                                    //    viewModel.adding = false
-                                },
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ))
-                    },*/
                 )
 
             }

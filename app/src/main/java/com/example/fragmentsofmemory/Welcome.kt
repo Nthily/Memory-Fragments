@@ -86,7 +86,7 @@ class Welcome : AppCompatActivity() {
                         dialogViewModel.PopUpAlertDialog(viewModel)
                         dialogViewModel.PopUpAlertDialogDrawerItems(viewModel, appViewModel)
                         dialogViewModel.PopUpConfirmDeleteItem(viewModel, appViewModel)
-                        ReadingFragments(viewModel, appViewModel, file, context, user!!)
+                        ReadingFragments(viewModel, context, user!!)
                         timePicker()
                     }
                 }
