@@ -145,27 +145,25 @@ fun AddingPage(dialogViewModel: DialogViewModel,
                                 onClick = {
 
                                     if (viewModel.editing) {
-                                        //user.last?.let {
-                                            appViewModel.updateCardMsg(
-                                                viewModel.cardId,
-                                                viewModel.textModify,
-                                                viewModel.timeResult,
-                                                user.last
-                                            )
-                                        //}
+                                        appViewModel.updateCardMsg(
+                                            viewModel.cardId,
+                                            viewModel.textModify,
+                                            viewModel.timeResult,
+                                            user.last
+                                        )
                                     } else {
-                                        //user.last?.let {
-                                            appViewModel.addDataBase(
-                                                viewModel.textModify,
-                                                viewModel.timeResult,
-                                                user.last
-                                            )
-                                        //}
+                                        appViewModel.addDataBase(
+                                            viewModel.textModify,
+                                            viewModel.timeResult,
+                                            user.last
+                                        )
                                     }
-
                                     viewModel.endAddPage()
-                                    //   userContent.value = ""
                                 },
+
+                                // 取消 clickable 所带来的波纹效果
+                                // Cancel the ripple effect caused by clickable
+
                                 indication = null,
                                 interactionSource = MutableInteractionSource()
                             ))

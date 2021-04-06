@@ -51,8 +51,6 @@ fun DeteilPage(
                     shape = CircleShape,
                 ) {
                     viewModel.InitUserProfilePic()
-                    //
-                  //  Image(painter = painterResource(id = R.drawable.qq20210315211722), contentDescription = null)
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                 Text(text = user.userName,
