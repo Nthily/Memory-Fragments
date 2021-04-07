@@ -1,5 +1,7 @@
 ## [简体中文](https://github.com/Nthily/compose-note/blob/master/README-cn.md)
 
+# compose-note
+
 ## A beautiful interface created through Jetpack Compose
 
 
