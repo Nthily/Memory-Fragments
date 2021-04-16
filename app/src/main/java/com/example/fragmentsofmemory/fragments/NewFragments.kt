@@ -42,7 +42,7 @@ fun Modifier.percentOffsetX(percent: Float): Modifier =
 
 @Composable
 fun PageContent(viewModel: UiModel, file: File, context: Context) {
-    viewModel.SetSecBackground(background = R.drawable.add_bkg)
+    viewModel.SetSecBackground(background = R.drawable._00d79dc3b43e3fdf3dc64452b0efe35)
     Column(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
